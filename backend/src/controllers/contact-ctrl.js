@@ -23,6 +23,7 @@ createContact = (req, res) => {
 				success: true,
 				id: contact.__id,
 				message: 'Contact created!',
+				data: contact,
 			})
 		})
 		.catch(error => {

@@ -5,9 +5,9 @@ const ContactCtrl = require('../controllers/contact-ctrl')
 const router = express.Router()
 
 router.post('/contact', ContactCtrl.createContact)
-router.put('/contact/:id', ContactCtrl.updateMovie)
-router.delete('/contact/:id', ContactCtrl.deleteMovie)
-router.get('/contact/:id', ContactCtrl.getMovieById)
-router.get('/contacts', ContactCtrl.getMovies)
+router.put('/contact/:id', ContactCtrl.updateContact)
+router.delete('/contact/:id', ContactCtrl.deleteContact)
+router.get('/contact/:id', ContactCtrl.getContactById)
+router.get('/contacts', ContactCtrl.getContacts)
 
 module.exports = router
