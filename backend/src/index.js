@@ -6,7 +6,7 @@ const db = require('./db')
 const contactRouter = require("./routes/contact-router")
 
 const app = express()
-const apiPort = 3000
+const apiPort = 3500
 
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cors())
