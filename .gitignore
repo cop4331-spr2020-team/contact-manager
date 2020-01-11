@@ -39,3 +39,4 @@ packages/react-devtools-shell/dist
 .vagrant/
 
 # Used for environment variables defining ports/usernames/etc...
+.env
