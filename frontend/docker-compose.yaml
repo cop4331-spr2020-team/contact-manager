@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: frontend
+    restart: unless-stopped
+    #env_file: .env
+    environment:
+      - NODE_ENV=development
+    #  - MONGO_USERNAME=$MONGO_USERNAME
+    #  - MONGO_PASSWORD=$MONGO_PASSWORD
+    #  - MONGO_CLUSTER=$MONGO_CLUSTER
+    ports:
+      - "80:3000"
+    volumes:
+      - .:/home/node/app/frontend
+      - node_modules:/home/node/app/frontend/node_modules
+
+volumes:
+  node_modules:

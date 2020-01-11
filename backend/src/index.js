@@ -6,7 +6,9 @@ const db = require('./db')
 const contactRouter = require("./routes/contact-router")
 
 const app = express()
-const apiPort = 3500
+
+const defaultPort = 8080
+const apiPort = process.env.PORT || defaultPort
 
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cors())
@@ -20,4 +22,4 @@ app.get('/', (req, res) => {
 
 app.use('/api', contactRouter)
 
-app.listen(apiPort, () => console.log(`Server running on port ${apiPort}`))
+app.listen(apiPort, () => console.log(` Backend server running on port ${apiPort}`))

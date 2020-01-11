@@ -1,14 +1,18 @@
 FROM node:12.14.1
 
 # set working directory
-WORKDIR /app
+WORKDIR /home/node/app/frontend/
 
-# add `/app/node_modules/.bin` to $PATH
-ENV PATH /app/node_modules/.bin:$PATH
+COPY package*.json ./
 
-# install and cache app dependencies
-COPY package.json /app/package.json
 RUN npm install
+# If you are building your code for production
+# RUN npm ci --only=production
+
+COPY . .
+
+# Go to frontend source
+WORKDIR /home/node/app/frontend/src/
 
 # start app
 CMD ["npm", "start"]
