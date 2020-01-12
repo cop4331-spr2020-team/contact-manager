@@ -7,14 +7,11 @@ services:
       dockerfile: Dockerfile
     container_name: frontend
     restart: unless-stopped
-    #env_file: .env
     environment:
-      - NODE_ENV=development
-    #  - MONGO_USERNAME=$MONGO_USERNAME
-    #  - MONGO_PASSWORD=$MONGO_PASSWORD
-    #  - MONGO_CLUSTER=$MONGO_CLUSTER
+      - REACT_APP_SERVER_DOMAIN=$SERVER_DOMAIN
+      - REACT_APP_SERVER_PORT=$SERVER_PORT
     ports:
-      - "80:3000"
+      - "3000:3000"
     volumes:
       - .:/home/node/app/frontend
       - node_modules:/home/node/app/frontend/node_modules

@@ -7,6 +7,7 @@ services:
       dockerfile: Dockerfile-prod
     container_name: frontend
     restart: unless-stopped
+    env_file: .env
     environment:
       - NODE_ENV=production
     ports:
