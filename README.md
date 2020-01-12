@@ -75,7 +75,7 @@ so that the environment variables for our database are set up.
 ### Simultaneously (Preferred Method)
 1. `cd` into the root of the project.
 2. `sudo docker-compose up` or `sudo docker-compose up -d` (preferred way) to run in the background.
-3. Access frontend through __11.11.11.11__ (port number not needed)
+3. Access frontend through __11.11.11.11:3000__
 4. Access backend through __11.11.11.11:8080__.
 5. `sudo docker-compose down` to shutdown the container (do not forget).
 
