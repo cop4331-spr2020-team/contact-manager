@@ -42,13 +42,13 @@ You should now have all you need to run/build this project. See [running](#runni
 for instructions on how to build/run our project.
 
 #### Stopping Vagrant
-You have two options here.
-`vagrant halt`, stopping its processing until you start it again.
+You have two options here.  
+`vagrant halt`, stopping its processing until you start it again.  
 `vagrant destroy`, deleting the box and its content (would have to re-setup).
 
 The latter is useful when you want to re-install everything.   
 
-**NOTE:** You can also perform vagrant up --provision so that the box performs  
+**NOTE:** You can also perform `vagrant up --provision` so that the box performs  
 the initialization procedure (if you updated something by accident).
 
 ## Build / Run
