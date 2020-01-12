@@ -1,4 +1,4 @@
-# cop4331-contact-manager
+# COP 4331 Contact Manager
 
 ## Setting up your development environment
 ### Requirements
