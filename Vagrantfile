@@ -14,6 +14,10 @@ Vagrant.configure("2") do |config|
   # communicate with server / database through our host machine.
   config.vm.network "private_network", ip: "11.11.11.11"
 
+  # Change default so that it home dir has git files
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+  config.vm.synced_folder "../", "/home/vagrant/project"
+
   # Run script to setup our vagrant machine.
   config.vm.provision "shell", path: "vagrant/install.sh"
 

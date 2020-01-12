@@ -11,8 +11,8 @@ const {
     REACT_APP_SERVER_PORT,
 } = process.env
 
-const get_test_uri = `http://${REACT_APP_SERVER_DOMAIN}:${REACT_APP_SERVER_PORT}/api/contacts`
-
+const get_test_uri = `http://${REACT_APP_SERVER_DOMAIN}:${REACT_APP_SERVER_PORT}/`
+console.log(get_test_uri)
 axios.get(get_test_uri)
 .then(resp => console.log(resp))
 .catch(error => {

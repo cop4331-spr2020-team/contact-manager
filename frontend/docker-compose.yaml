@@ -10,11 +10,20 @@ services:
     environment:
       - REACT_APP_SERVER_DOMAIN=$SERVER_DOMAIN
       - REACT_APP_SERVER_PORT=$SERVER_PORT
+    networks:
+      static_network:
+        ipv4_address: 172.22.0.99
     ports:
       - "3000:3000"
     volumes:
       - .:/home/node/app/frontend
       - node_modules:/home/node/app/frontend/node_modules
 
+networks:
+  static_network:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.22.0.0/16
 volumes:
   node_modules:

@@ -9,41 +9,31 @@ services:
       restart: unless-stopped
       env_file: .env
       environment:
-        - NODE_ENV=development
         - MONGO_USERNAME=$MONGO_USERNAME
         - MONGO_PASSWORD=$MONGO_PASSWORD
         - MONGO_CLUSTER=$MONGO_CLUSTER
       ports:
         - "8080:8080"
-      networks:
-        - app-network
+      network_mode: bridge
       volumes:
         - ./backend:/home/node/app/backend
-        - node_modules:/home/node/app/backend/node_modules  
+        - ./backend/node_modules:/home/node/app/backend/node_modules  
 
   frontend:
-      build:
-        context: ./frontend
-        dockerfile: Dockerfile
-      container_name: frontend
-      restart: unless-stopped
-      #env_file: .env
-      environment:
-        - NODE_ENV=development
-      #  - MONGO_USERNAME=$MONGO_USERNAME
-      #  - MONGO_PASSWORD=$MONGO_PASSWORD
-      #  - MONGO_CLUSTER=$MONGO_CLUSTER
-      ports:
-        - "80:3000"
-      networks:
-        - app-network
-      volumes:
-        - ./frontend:/home/node/app/frontend
-        - node_modules:/home/node/app/frontend/node_modules
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    restart: unless-stopped
+    environment:
+      - REACT_APP_SERVER_DOMAIN=$SERVER_DOMAIN
+      - REACT_APP_SERVER_PORT=$SERVER_PORT
+    ports:
+      - "3000:3000"
+    network_mode: bridge
+    volumes:
+      - ./frontend:/home/node/app/frontend
+      - ./frontend/node_modules:/home/node/app/frontend/node_modules
 
-
-networks:
-  app-network:
-    driver: bridge
 volumes:
   node_modules:

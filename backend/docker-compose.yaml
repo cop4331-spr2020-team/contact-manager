@@ -12,11 +12,20 @@ services:
       - MONGO_USERNAME=$MONGO_USERNAME
       - MONGO_PASSWORD=$MONGO_PASSWORD
       - MONGO_CLUSTER=$MONGO_CLUSTER
+    networks:
+      static_network:
+        ipv4_address: 172.22.0.100
     ports:
       - "8080:8080"
     volumes:
       - .:/home/node/app/backend
       - node_modules:/home/node/app/backend/node_modules
 
+networks:
+  static_network:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.22.0.0/16
 volumes:
   node_modules:
