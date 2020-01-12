@@ -1,0 +1,8 @@
+# Should work fine as well
+FROM node:12.14.1
+WORKDIR /home/node/app/backend/
+COPY package*.json ./
+RUN npm install
+COPY . .
+WORKDIR /home/node/app/backend/src/
+CMD ["npm", "start"]
