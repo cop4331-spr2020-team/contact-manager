@@ -74,6 +74,7 @@ so that the environment variables for our database are set up.
 2. `docker-compose up` or `docker-compose up -d` to run in the background.
 3. Access frontend through __11.11.11.11__ (port number not needed)
 4. Access backend through __11.11.11.11:<port_number>__.
+5. `docker-compose down` to shutdown the container.
 
 ## Deploying Production
 The backend server has no changes in terms of deployment, but React has an optimized build step  
