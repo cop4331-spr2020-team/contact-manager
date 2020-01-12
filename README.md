@@ -1,4 +1,9 @@
 # COP 4331 Contact Manager
+## Important Accounts
+Please make sure you get these registered / added to the group.
+* [COP 4331 Team Discord Server](https://discord.gg/6RkXYtZ "Discord COP 4331 Group")
+* [MongoDB Atlas](https://www.mongodb.com/ "MongoDB Atlas Main Page")
+* [Swagger](https://swagger.io/ "Swagger Main Page")
 
 ## Setting up your development environment
 ### Requirements
