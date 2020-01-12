@@ -43,7 +43,7 @@ if __name__ == '__main__':
                     help='MongoDB Atlas database account password.')
 	parser.add_argument('mongo_cluster', type=str,
                     help='MongoDB Atlas database cluster name.')
-	parser.add_argument('server_domain', type=str, default='172.22.0.100', nargs='?',
+	parser.add_argument('server_domain', type=str, default='11.11.11.11', nargs='?',
 					help='Server domain for backend server.')
 	parser.add_argument('server_port', type=str, default='8080', nargs='?',
 					help='Server port for backend server.')
