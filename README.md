@@ -48,7 +48,7 @@ You have two options here.
 
 The latter is useful when you want to re-install everything.   
 
-**NOTE:** You can also perform vagrant up --provision so that the box performs  
+**NOTE:** You can also perform `vagrant up --provision` so that the box performs  
 the initialization procedure (if you updated something by accident).
 
 ## Build / Run
