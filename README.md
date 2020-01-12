@@ -62,21 +62,22 @@ so that the environment variables for our database are set up.
 1. Acquire a username / password from our MongoDB Atlas database accounts (for respective project).
 2. Acquire the cluster name for the respective project.
 3. `cd` into the root of the project.
-4. `python3 setup.py <mongo_user> <mongo_pass> <mongo_cluster_name>`
-or...  
-Run `./setup_defaults` for a working development configuration.
+4. `python3 setup.py <mongo_user> <mongo_pass> <mongo_cluster_name>` 
+  
+**or...**  
+* Run `./setup_defaults` for a working development configuration.
 
 ### Running Backend / Frontend
 1. `cd backend/` or `cd frontend/`
-2. `docker-compose up` or `docker-compose up -d` to run in the background.
+2. `sudo docker-compose up` or `sudo docker-compose up -d` to run in the background.
 3. You can access the backend/frontend through __11.11.11.11:3000__ on your host machine.
 
 ### Simultaneously (Preferred Method)
 1. `cd` into the root of the project.
-2. `docker-compose up` or `docker-compose up -d` to run in the background.
+2. `sudo docker-compose up` or `sudo docker-compose up -d` (preferred way) to run in the background.
 3. Access frontend through __11.11.11.11__ (port number not needed)
 4. Access backend through __11.11.11.11:8080__.
-5. `docker-compose down` to shutdown the container.
+5. `sudo docker-compose down` to shutdown the container (do not forget).
 
 ## Deploying Production
 The backend server has no changes in terms of deployment, but React has an optimized build step  
