@@ -16,7 +16,7 @@ Vagrant.configure("2") do |config|
 
   # Change default so that it home dir has git files
   config.vm.synced_folder ".", "/vagrant", disabled: true
-  config.vm.synced_folder "../", "/home/vagrant/project"
+  config.vm.synced_folder ".", "/home/vagrant/project"
 
   # Run script to setup our vagrant machine.
   config.vm.provision "shell", path: "vagrant/install.sh"
