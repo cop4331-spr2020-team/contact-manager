@@ -62,7 +62,7 @@ so that the environment variables for our database are set up.
 1. Acquire a username / password from our MongoDB Atlas database accounts (for respective project).
 2. Acquire the cluster name for the respective project.
 3. `cd` into the root of the project.
-4. `python3 setup.py <mongo_user> <mongo_pass> <mongo_cluster_name>` 
+4. `./setup <mongo_user> <mongo_pass> <mongo_cluster_name>` 
   
 **or...**  
 * Run `./setup_defaults` for a working development configuration.
