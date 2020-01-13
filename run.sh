@@ -1,8 +1,8 @@
 #!/bin/bash
 
-DIRS=( frontend backend )
+dirs=( "frontend" "backend" )
 
-for dir in "${DIRS[@]}"
+for dir in "${dirs[@]}"
 do
     pushd $dir
     npm install
