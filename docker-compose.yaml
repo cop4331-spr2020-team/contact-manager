@@ -17,7 +17,7 @@ services:
       network_mode: bridge
       volumes:
         - ./backend:/home/node/app/backend
-        - ./backend/node_modules:/home/node/app/backend/node_modules  
+        - /home/node/app/backend/node_modules  
 
   frontend:
     build:
@@ -33,7 +33,7 @@ services:
     network_mode: bridge
     volumes:
       - ./frontend:/home/node/app/frontend
-      - ./frontend/node_modules:/home/node/app/frontend/node_modules
+      - /home/node/app/frontend/node_modules
 
 volumes:
   node_modules:
