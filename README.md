@@ -37,9 +37,10 @@ You should now have all you need to run/build this project. See [running](#runni
 for instructions on how to build/run our project.
 
 #### Stopping Vagrant
-You have two options here.  
-`vagrant halt`, stopping its processing until you start it again.  
-`vagrant destroy`, deleting the box and its content (would have to re-setup).
+In vagrant, type 'exit' to leave vagrant.  
+To stop vagrant machine, you have two options.  
+   `vagrant halt`, stopping its processing until you start it again.  
+   `vagrant destroy`, deleting the box and its content (would have to re-setup).
 
 The latter is useful when you want to re-install everything.   
 
