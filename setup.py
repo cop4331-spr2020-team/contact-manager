@@ -6,9 +6,12 @@ def main(args):
 	backend_env_path = "./backend/.env"
 	frontend_env_path = "./frontend/.env"
 
-	os.remove(root_env_path)
-	os.remove(backend_env_path)
-	os.remove(frontend_env_path)
+	try:
+		os.remove(root_env_path)
+		os.remove(backend_env_path)
+		os.remove(frontend_env_path)
+	except:
+		print ("")
 
 	setup_frontend(args.server_domain, args.server_port, frontend_env_path)
 	setup_frontend(args.server_domain, args.server_port, root_env_path)
