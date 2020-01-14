@@ -8,7 +8,7 @@
 
 ### IDE (Text editor)
 I recommend you use **Visual Studio Code** (with js/html/css/react/etc...) packages installed.
-When editting your files through your host machine, please make sure you using Linux line endings.
+When editting your files through your host machine, please make sure you are using Linux line endings.
 (LF). On Visual Studio Code, you can find that option on the bottom right after "Spaces/Tabs...".
 
 ### Instructions
