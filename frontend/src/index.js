@@ -6,6 +6,11 @@ import * as serviceWorker from './serviceWorker';
 
 import axios from 'axios';
 
+// Load process.env variables for mongo.
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
+
 const {
     REACT_APP_SERVER_DOMAIN,
     REACT_APP_SERVER_PORT,
