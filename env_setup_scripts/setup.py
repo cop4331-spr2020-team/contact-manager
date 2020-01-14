@@ -2,9 +2,9 @@ import os
 import argparse
 
 def main(args):
-	root_env_path = "./.env"
-	backend_env_path = "./backend/.env"
-	frontend_env_path = "./frontend/.env"
+	root_env_path = "../.env"
+	backend_env_path = "../backend/.env"
+	frontend_env_path = "../frontend/.env"
 
 	try:
 		os.remove(root_env_path)
