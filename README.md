@@ -64,8 +64,8 @@ so that the project environment variables and packages are setup.
 
 ### Running Backend / Frontend  
 1. `cd backend/` or `cd frontend/`
-2a. (Using docker) `sudo docker-compose up` or `sudo docker-compose up -d` to run in the background.
-2b. (Using npm) Please use `npm start` for frontend, and `npm run dev` for backend.
+2. (Using docker) `sudo docker-compose up` or `sudo docker-compose up -d` to run in the background.  
+   (Using npm) Please use `npm start` for frontend, and `npm run dev` for backend.
 3. You can access the frontend through __11.11.11.11:3000__ on your host machine, backend on __11.11.11.11:8080__.
 
 ### Simultaneously (Preferred Method)
