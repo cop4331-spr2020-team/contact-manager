@@ -4,7 +4,7 @@ dirs=( "frontend" "backend" )
 
 for dir in "${dirs[@]}"
 do
-	if [ -d "$dir" ]
+	if [ -d "$dir/node_modules" ] && [ -d "/home/vagrant/do_not_touch/$dir" ]
 	then
 		echo "It seems that the \"$dir\" package has been initialized."
 		printf "Do you still want to continue [y/n] "
@@ -26,6 +26,7 @@ do
     rm -rf node_modules /home/vagrant/do_not_touch/$dir > /dev/null
     echo "Clearing npm cache."
     npm cache clean -f > /dev/null 2>&1
+    mkdir -p /home/vagrant/do_not_touch/$dir
     ln -s node_modules /home/vagrant/do_not_touch/$dir
     echo ""
     echo "Starting installation for \"$dir\" packages."
