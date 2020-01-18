@@ -10,6 +10,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 const db = require('./db')
 const contactRouter = require("./routes/contact-router")
+const userRouter = require("./routes/user-router")
 
 const defaultPort = 8080
 const apiPort = process.env.PORT || defaultPort
@@ -20,6 +21,6 @@ app.get('/', (req, res) => {
     res.send('Hello World!')
 })
 
-app.use('/api', contactRouter)
+app.use('/api', userRouter)
 
 app.listen(apiPort, () => console.log(` Backend server running on port ${apiPort}`))
