@@ -1,8 +1,8 @@
-const express    = require('express')
-const bodyParser = require('body-parser')
-const cors       = require('cors')
-const logger     = require('morgan')
-const config     = require('./config/config')
+const express          = require('express')
+const bodyParser       = require('body-parser')
+const cors             = require('cors')
+const logger           = require('morgan')
+const config           = require('./config/config')
 
 // Initialize express.
 const app = express()
@@ -15,10 +15,12 @@ const db = require('./db')
 db.on('error', console.error.bind(console, 'MongoDB connection error:'))
 
 // Setup routing.
-const userRouter = require("./routes/user-router")
-app.use('/', userRouter)
+const userRouter    = require("./routes/user-router")
+// const contactRouter = require('./routes/contact-router') 
+app.use('/auth', userRouter)
+// app.use('/api', contactRouter)
 
 // Setup listener on port.
 app.listen(config.LISTEN_PORT, () => {
-	console.log(`Backend server listening on port ${apiPort}`)	
+	console.log(`Backend server listening on port ${config.LISTEN_PORT}`)	
 })

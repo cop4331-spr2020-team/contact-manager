@@ -9,7 +9,7 @@ const options = {
 }
 
 // uri of database to fetch/push
-const uri = `mongodb+srv://${config.MONGO_USERNAME}:${config.MONGO_PASSWORD}@${config.MONGO_CLUSTER}-cwnt0.mongodb.net/test?retryWrites=true&w=majority`
+const uri = `mongodb+srv://${config.MONGO_USERNAME}:${config.MONGO_PASSWORD}@${config.MONGO_CLUSTER}-cwnt0.mongodb.net/users?retryWrites=true&w=majority`
 console.log(`MOGNODB Server url: ${uri}`)
 
 mongoose
@@ -20,5 +20,4 @@ mongoose
 		console.error('Connection error', e.message)
 	})
 
-const db = mongoose.connection
-module.exports = db
+module.exports = mongoose.connection

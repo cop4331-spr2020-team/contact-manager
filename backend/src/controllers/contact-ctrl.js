@@ -1,6 +1,8 @@
 const Contact = require('../models/contact-model')
 
-createContact = (req, res) => {
+const { body, validationResult } = require('express-validator')
+
+createContact = async (req, res) => {
 	const body = req.body
 
 	if (!body) {
@@ -136,10 +138,30 @@ getContacts = async (req, res) => {
 	}).catch(err => console.log(err))
 }
 
+validate = (method) => {
+	switch (method) {
+		case 'getContact': {
+			return [
+				body('userName', 'userName doesn\'t exist').exists(),
+				body('email', 'invalid email.').exists().isEmail(),
+				body('password', 'password doesn\t exist').exists()
+			]
+		}
+
+		case 'createContact': {
+			return [
+				body('userName', 'username doesn\'t exist').exists(),
+				body('password', 'password doesn\t exist').exists()
+			]
+		}
+	}
+}
+
 module.exports = {
 	createContact,
 	updateContact,
 	deleteContact,
 	getContacts,
 	getContactById,
+	validate
 }
