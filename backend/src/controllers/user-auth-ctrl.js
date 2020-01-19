@@ -1,17 +1,59 @@
 const Validator   = require('validator')
 const isEmpty     = require('is-empty')
+
+// Authentication
 const JwtStrategy = require('passport-jwt').Strategy
 const ExtractJwt  = require('passport-jwt').ExtractJwt
+const bcrypt      = require('bcrypt')
+const jwt         = require('jsonwebtoken')
+const moment      = require('moment')
+
+// MongoDB model
 const User        = require('../models/user-model')
-const bcrypt    = require('bcrypt')
-const jwt       = require('jsonwebtoken')
-const keys      = require('../config/keys')
+
+ensureAuthenticate = (req, res, next) => {
+
+	if (!req.header.authorization) 
+	{
+		return res.status(401).send({ error: 'TokenMissing' })
+	}
+
+	var token = req.headers.authorization.split(' ')[1]
+	var payload = null
+
+	try
+	{
+		payload = jwt.decode(token, config.TOKEN_SECRET)
+	}
+	catch
+	{ 
+		return res.status(401).send({ error: 'TokenInvalid' })
+	}
+
+	if (payload.exp <= mement().unix()) 
+	{
+		return res.status(401).send({ error: 'TokenExpired' })
+	}
+
+	Contacts.findById(payload.sub, function(err, contact) {
+		if (!contact)
+		{
+			return res.status(404).send({ error: 'ContactNotFound' })
+		}
+		else
+		{
+			req.user = paylod.sub
+			next()
+		}
+	})
+}
 
 maybeAuthenticate = (req, res) => {
 
 	const {errors, isValid} = validateLoginInput(req.body)
 
-	if (!isValid) {
+	if (!isValid)
+	{
 		return res.status(400).json(errors)
 	}
 
@@ -19,20 +61,26 @@ maybeAuthenticate = (req, res) => {
 	const password = req.body.password 
 
 	User.findOne({username})
-		.then(user => {
-			if (!user) {
+		.then(user => 
+		{
+			if (!user) 
+			{
 				return res.status(404).json({username_not_found:"Username not found"})
 			}
 
 			bcrypt.compare(password, user.password)
-				.then(isMatch => {
-					if (isMatch) {
-						const payload = {
+				.then(isMatch => 
+				{
+					if (isMatch) 
+					{
+						const payload = 
+						{
 							id: user.id,
 							name: user.name
 						}
 
-						jwt.sign(
+						jwt.sign
+						(
 							payload,
 							keys.secretOrKey,
 							{
@@ -45,7 +93,9 @@ maybeAuthenticate = (req, res) => {
 								})
 							}
 						)
-					} else {
+					} 
+					else 
+					{
 						return res.status(400).json({ incorrect_password: "Password incorrect"})
 					}
 				})
@@ -75,5 +125,6 @@ function validateLoginInput(data) {
 }
 
 module.exports = {
-	maybeAuthenticate
+	maybeAuthenticate,
+	ensureAuthenticate
 }

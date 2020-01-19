@@ -2,6 +2,7 @@ const express    = require('express')
 const bodyParser = require('body-parser')
 const cors       = require('cors')
 const logger     = require('morgan')
+const config     = require('./config/config')
 
 // Initialize express.
 const app = express()
@@ -15,10 +16,9 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'))
 
 // Setup routing.
 const userRouter = require("./routes/user-router")
-app.use('/api/user', userRouter)
+app.use('/', userRouter)
 
 // Setup listener on port.
-const defaultPort = 8080
-const apiPort     = process.env.PORT || defaultPort
-
-app.listen(apiPort, () => console.log(` Backend server running on port ${apiPort}`))
+app.listen(config.LISTEN_PORT, () => {
+	console.log(`Backend server listening on port ${apiPort}`)	
+})
