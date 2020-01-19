@@ -1,6 +1,7 @@
 // Authentication
 const bcrypt = require('bcrypt')
 const jwt    = require('jsonwebtoken')
+const moment = require('moment')
 
 // Config data for jwt
 const config = require('../config/config')
@@ -11,12 +12,13 @@ const User   = require('../models/user-model')
 // Validation for data.
 const { body, validationResult } = require('express-validator');
 
-ensureAuthenticate = async (req, res, next) => {
-	if (!req.header.authorization) {
+authenticate = async (req, res, next) => {
+
+	if (!req.header('Authorization')) {
 		return res.status(401).send({ error: 'TokenMissing' })
 	}
 
-	var token = req.headers.authorization.split(' ')[1]
+	var token = req.header('Authorization').split(' ')[1]
 	var payload = null
 
 	try {
@@ -26,16 +28,17 @@ ensureAuthenticate = async (req, res, next) => {
 		return res.status(401).send({ error: 'TokenInvalid' })
 	}
 
-	if (payload.exp <= mement().unix()) {
+	if (payload.exp <= moment().unix()) {
 		return res.status(401).send({ error: 'TokenExpired' })
 	}
 
-	Contacts.findById(payload.sub, function(err, contact) {
-		if (!contact) {
-			return res.status(404).send({ error: 'ContactNotFound' })
+	User.findById(payload.id, function(err, user) {
+		if (!user) {
+			return res.status(404).send({ error: 'UserNotFound' })
 		}
 		else {
-			req.user = paylod.sub
+			req.user = payload.id
+			req.contacts = user.contacts
 			next()
 		}
 	})
@@ -78,7 +81,7 @@ login = async (req, res) => {
 					(err, token) => {
 						res.json({
 							success: true,
-							"Bearer-Token": token
+							token: token
 						})
 					}
 				)
@@ -200,6 +203,6 @@ validate = (method) => {
 module.exports = {
 	validate,
 	login,
-	ensureAuthenticate,
-	register
+	register,
+	authenticate,
 }

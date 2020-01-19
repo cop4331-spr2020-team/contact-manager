@@ -16,9 +16,9 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'))
 
 // Setup routing.
 const userRouter    = require("./routes/user-router")
-// const contactRouter = require('./routes/contact-router') 
+const contactRouter = require('./routes/contact-router') 
 app.use('/auth', userRouter)
-// app.use('/api', contactRouter)
+app.use('/api', contactRouter)
 
 // Setup listener on port.
 app.listen(config.LISTEN_PORT, () => {
