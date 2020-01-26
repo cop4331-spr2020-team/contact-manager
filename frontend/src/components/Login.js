@@ -3,6 +3,7 @@ import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
 
 import './components.css';
 
+
 class Login extends Component
 {
     constructor(props) {
@@ -45,24 +46,24 @@ class Login extends Component
 
     render() {
         return(
-
+    
             <Form className="login" onSubmit={this.handleSubmit}>
                 <FormGroup>
                     <Label>Username</Label>
-                    <Input
+                    <Input 
                         type="text"
-                        name="username"
-                        placeholder="Username"
+                        name="username" 
+                        placeholder="Username" 
                         value={this.state.username}
                         onChange={this.handleChange}
                     />
                 </FormGroup>
                 <FormGroup>
                     <Label>Password</Label>
-                    <Input
+                    <Input 
                         type="password"
                         name="password"
-                        placeholder="Password"
+                        placeholder="Password" 
                         value={this.state.password}
                         onChange={this.handleChange}
                     />
