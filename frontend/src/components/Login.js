@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
 
-import '../App.css';
+import './components.css';
+
 
 class Login extends Component
 {
@@ -67,7 +68,7 @@ class Login extends Component
                         onChange={this.handleChange}
                     />
                 </FormGroup>
-        
+
             <Button className="btn-lg btn-dark btn-block" type="submit" >
                     Login</Button>
 
