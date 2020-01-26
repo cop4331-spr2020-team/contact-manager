@@ -1,67 +1,81 @@
 import React, { Component } from 'react';
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
 
-import './App.css';
+import '../App.css';
 
 class Login extends Component
 {
     constructor(props) {
         super(props)
-
+        
         this.state = {
             username: '',
             password: ''
         }
     }
     handleSubmit = (event) => {
-        alert('A name was submitted: ' + this.state.username); //placeholder
         event.preventDefault();
+        fetch('/api/authenticate', {
+            method: 'POST',
+            body: JSON.stringify(this.state),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(res => {
+            if (res.status === 200) {
+                this.props.history.push('/');
+            } else {
+                const error = new Error(res.error);
+                throw error;
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Error logging in please try again');
+        });
     }
 
-    handleUsernameChange = (event) => {
+    handleChange = (event) => {
+        const { value, name } = event.target;
         this.setState({
-            username: event.target.value
-        })
-    }
-
-    handlePasswordChange = (event) => {
-        this.setState({
-            password: event.target.value
-        })
+            [name]: value
+        });
     }
 
     render() {
         return(
-
+    
             <Form className="login" onSubmit={this.handleSubmit}>
                 <FormGroup>
                     <Label>Username</Label>
-                    <Input
-                        type="username"
-                        placeholder="Username"
+                    <Input 
+                        type="text"
+                        name="username" 
+                        placeholder="Username" 
                         value={this.state.username}
-                        onChange={this.handleUsernameChange}
+                        onChange={this.handleChange}
                     />
                 </FormGroup>
                 <FormGroup>
                     <Label>Password</Label>
-                    <Input
+                    <Input 
                         type="password"
-                        placeholder="Password"
+                        name="password"
+                        placeholder="Password" 
                         value={this.state.password}
-                        onChange={this.handlePasswordChange}
+                        onChange={this.handleChange}
                     />
                 </FormGroup>
-
-        <Button className="btn-lg btn-dark btn-block" type="submit" >
+        
+            <Button className="btn-lg btn-dark btn-block" type="submit" >
                     Login</Button>
 
                 <div  className="p-2">
-                    <a href="/register">Register</a> // Link to register page(needs to be made)
+                    <a href="/register">Register</a>
                 </div>
         </Form>
-
-    );
+        );
     }
 };
 
