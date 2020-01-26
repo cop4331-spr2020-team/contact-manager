@@ -5,17 +5,16 @@ import Login from './Login';
 
 const LoginPage = () => {
     return (
-        <div>
+        <div className="wrapper">
             <h1 
             id="title"
-            style={{display: 'flex', justifyContent:'center', alignItems:'center'}}
             >
                <span className="font-weight-bold"> Contact Manager</span>
-                </h1>
+            </h1>
             
-            <Container>
+            <div className="form-wrapper">
                 <Login/>
-            </Container>
+            </div>
         </div>
     );
 };
