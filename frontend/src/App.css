@@ -32,21 +32,21 @@ i {
 .container-test {
     position: relative; 
     margin: 0 auto;
-    border: 2px solid green;
+    /* border: 2px solid green; */
     /* top: 15rem; */
-    width: 80%;
+    width: 100%;
 }
 
 .list-group {
     position: relative;
     margin: 0 auto;
     width: 100%;      
-    border: 2px solid red;
+    /* border: 2px solid red; */
 }
 
 .name-lbl {
     position: relative;
-    border: 2px solid blueviolet;
+    /* border: 2px solid blueviolet; */
 }
 
 .group-text {

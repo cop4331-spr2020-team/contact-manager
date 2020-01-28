@@ -2,7 +2,6 @@ import React from 'react';
 import AppNavbar from './components/AppNavbar';
 import ContactList from './components/ContactList';
 import ItemModal from './components/ItemModal';
-import loginForm from './login/loginForm';
 import { Container } from 'reactstrap';
 
 // Redux dependencies

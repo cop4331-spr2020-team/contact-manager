@@ -17,7 +17,11 @@ import {
 
         state = {
             modal: false,
-            name: ''
+            name: '',
+            phone: '',
+            email: ''
+
+
         }
 
         toggle = () => {

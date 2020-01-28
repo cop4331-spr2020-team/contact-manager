@@ -25,16 +25,18 @@ class ContactList extends Component {
     onDeleteClick = (id) => {
         this.props.deleteItem(id);
     }
-       
+    
+    // onUpdateClick = () => {
+    //     this.props.editItem(this.item, this.id)
+    // }
 
     render () {
-        // This is called object de-structuring
         const { items } = this.props.item;
         return (
             <Container className="container-test">
                 <ListGroup className="list-group">
                     <TransitionGroup className="contact-list">
-                        {items.map(({ id, name, phone, email }) => (
+                        {items.map(( { id, name, phone,email }) => (
                             <CSSTransition key={id} timeout={500} classNames="fade">
                                 <Toggle>
                                 {({on, toggle}) => (
@@ -94,6 +96,12 @@ class ContactList extends Component {
                                             >
                                             Delete
                                         </Button>
+                                        <Button
+                                        className="save-btn"
+                                        size="sm"
+                                        color="success"
+                                        // onClick={this.onUpdateClick.bind(this, id)}
+                                        >Save</Button>
                                         </InputGroupAddon>
                                         </InputGroup>
                                         </Form>
@@ -123,5 +131,5 @@ const mapStateToProps = (state) => ({
 
 export default connect(
     mapStateToProps, 
-    { getItems, deleteItem }
+    { getItems, deleteItem, editItem }
     )(ContactList);
