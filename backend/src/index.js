@@ -1,25 +1,26 @@
-const bodyParser = require('body-parser')
-const express = require('express')
-const cors = require('cors')
+const express          = require('express')
+const bodyParser       = require('body-parser')
+const cors             = require('cors')
+const logger           = require('morgan')
+const config           = require('./config/config')
 
+// Initialize express.
 const app = express()
 app.use(cors());
-app.options('*', cors());  // enable pre-flight
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
+// Initialize database.
 const db = require('./db')
-const contactRouter = require("./routes/contact-router")
-
-const defaultPort = 8080
-const apiPort = process.env.PORT || defaultPort
-
 db.on('error', console.error.bind(console, 'MongoDB connection error:'))
 
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-})
-
+// Setup routing.
+const userRouter    = require("./routes/user-router")
+const contactRouter = require('./routes/contact-router') 
+app.use('/auth', userRouter)
 app.use('/api', contactRouter)
 
-app.listen(apiPort, () => console.log(` Backend server running on port ${apiPort}`))
+// Setup listener on port.
+app.listen(config.LISTEN_PORT, () => {
+	console.log(`Backend server listening on port ${config.LISTEN_PORT}`)	
+})
