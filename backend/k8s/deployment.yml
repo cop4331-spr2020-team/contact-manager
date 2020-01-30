@@ -1,0 +1,39 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: contact-manager-backend
+spec:
+  replicas: 2
+  template:
+    metadata:
+      name: backend
+      labels:
+        app: contact-manager
+        role: backend
+        env: production
+    spec:
+      containers:
+      - name: backend
+        image: gcr.io/GKE_PROJECT/IMAGE:TAG
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "250Mi"
+            cpu: "150m"
+          requests:
+            memory: "250Mi"
+            cpu: "150m"
+        livenessProbe:
+          initialDelaySeconds: 2
+          periodSeconds: 5
+          httpGet:
+            path: /api/health
+            port: 8080
+        #readinessProbe:
+        #  httpGet:
+        #    path: /healthz
+        #    port: 8080
+        command: ["npm", "start"]
+        ports:
+          - name: backend
+            containerPort: 8080
