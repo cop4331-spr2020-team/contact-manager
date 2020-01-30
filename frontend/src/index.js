@@ -4,6 +4,13 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
+axios.get(`api/version`)
+  .then((resp) => {
+    console.log("Version ok!" + resp.data)
+  })
+  .catch(error => {
+    console.log(`Axios error: ${error}`);
+  });
 
 ReactDOM.render(<App />, document.getElementById('root'));
 

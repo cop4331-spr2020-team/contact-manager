@@ -4,16 +4,6 @@ import './App.css';
 import axios from 'axios';
 
 function App() {
-
-
-  axios.get(`api/version`)
-  .then((resp) => {
-    console.log("Version ok!" + resp.data)
-  })
-  .catch(error => {
-    console.log(`Axios error: ${error}`);
-  });
-
   return (
     <div className="App">
       <header className="App-header">
