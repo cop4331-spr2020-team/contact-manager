@@ -1,83 +1,102 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
+import '../App.css';
+import { Link, Redirect } from 'react-router-dom';
+import axios from 'axios';
 
-import './components.css';
-
-
-class Login extends Component
+function Login ()
 {
-    constructor(props) {
-        super(props)
-        
-        this.state = {
-            username: '',
-            password: ''
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [errorMsg,setErrorMsg] = useState("");
+    const [isLogin, setLogin] = useState(false);
+    const [isError, setError] = useState(false);
+
+    function getLogin() {
+        if ((username == "") || (password == "")) { // if submitted without any input give error
+            setError(true);
+            setErrorMsg("Invalid Username/Password");
+            return;
         }
-    }
-    handleSubmit = (event) => {
-        event.preventDefault();
-        fetch('/api/authenticate', {
-            method: 'POST',
-            body: JSON.stringify(this.state),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(res => {
-            if (res.status === 200) {
-                this.props.history.push('/');
-            } else {
-                const error = new Error(res.error);
-                throw error;
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            alert('Error logging in please try again');
+        // in user-router "/login" route uses get, but i couldnt make it work so i changed to put instead
+        // Retrieve user from backend
+        axios.put("http://localhost:8080/auth/login", {
+            username,
+            password
+        }
+        ).then(result => {
+          if (result.status === 200) {
+            console.log(result.data);
+                                  // Token needs to be stored
+            setLogin(true);
+          } else {
+            setError(true);
+            setErrorMsg("Invalid Username/Password");
+            setUsername("");
+            setPassword("");
+          }
+        }).catch(e => {
+          setError(true);
+          setErrorMsg("Invalid Username/Password");
+          setUsername("");
+          setPassword("");
         });
-    }
 
-    handleChange = (event) => {
-        const { value, name } = event.target;
-        this.setState({
-            [name]: value
-        });
-    }
+      }
 
-    render() {
+      if (isLogin) {
+          return <Redirect to="/"/> // Redirect after login
+      }
+
+
+      const handleUsername = (event) => {
+        if(setError) {
+            setErrorMsg("");
+            setError(false);
+        }
+        setUsername(event.target.value);
+      }
+      const handlePassword = (event) => {
+        if(setError) {
+            setErrorMsg("");
+            setError(false);
+        }
+        setPassword(event.target.value);
+      }
+
+
         return(
-    
-            <Form className="login" onSubmit={this.handleSubmit}>
+            <Form className="login">
                 <FormGroup>
                     <Label>Username</Label>
-                    <Input 
+                    <Input
+                        className="input"
                         type="text"
-                        name="username" 
-                        placeholder="Username" 
-                        value={this.state.username}
-                        onChange={this.handleChange}
+                        value={username}
+                        onChange={handleUsername}
+                        invalid = {isError}
                     />
                 </FormGroup>
                 <FormGroup>
                     <Label>Password</Label>
-                    <Input 
+                    <Input
+                        className="input"
                         type="password"
-                        name="password"
-                        placeholder="Password" 
-                        value={this.state.password}
-                        onChange={this.handleChange}
+                        value={password}
+                        onChange={handlePassword}
+                        invalid = {isError}
                     />
                 </FormGroup>
-
-            <Button className="btn-lg btn-dark btn-block" type="submit" >
+                <Label>{errorMsg}</Label>
+                <Button className="btn-lg btn-dark btn-block" onClick={getLogin} >
                     Login</Button>
 
                 <div  className="p-2">
-                    <a href="/register">Register</a>
+                    <Link to="/register">Sign Up</Link> {/*needs to be linked*/}
                 </div>
-        </Form>
+            </Form>
         );
-    }
+
 };
 
 export default Login;
