@@ -10,6 +10,7 @@ services:
     environment:
       - REACT_APP_SERVER_DOMAIN=$SERVER_DOMAIN
       - REACT_APP_SERVER_PORT=$SERVER_PORT
+      - REACT_APP_MONGO_USERNAME=test
     networks:
       static_network:
         ipv4_address: 172.22.0.99

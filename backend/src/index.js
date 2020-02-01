@@ -17,6 +17,13 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'))
 // Setup routing.
 const userRouter    = require("./routes/user-router")
 const contactRouter = require('./routes/contact-router') 
+
+// For simple testing purposes.
+app.get('/api/version', function (req, res, next) {
+    res.status(200).json({ version: "1.0.0", message: "Hello, User!" })
+    next()
+})
+
 app.use('/auth', userRouter)
 app.use('/api', contactRouter)
 
