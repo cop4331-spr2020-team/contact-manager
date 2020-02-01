@@ -25,7 +25,7 @@
     justify-content: center;
 }
 
-.cards {
+.cards {    /* individual cards */
     box-shadow: 0px 5px 5px #555;
     text-align:"center"
 }
