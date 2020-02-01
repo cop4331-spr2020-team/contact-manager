@@ -13,8 +13,7 @@ name: Build and Deploy to GKE
 on:
   push:
     branches:
-    - marloncalvo-patch-1
-    - 6-setup-cd-dns
+    - master
 
 # Environment variables available to all jobs and steps in this workflow
 env:
