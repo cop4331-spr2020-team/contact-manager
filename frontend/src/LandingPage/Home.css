@@ -1,0 +1,30 @@
+.wrap {             /* background */
+    padding-top: 5%;
+    height: 100vh;
+    background-color: #EFF6E0;
+    background-image: url();
+}
+.jumbotron{ 
+    box-shadow: 0px 5px 5px #555;
+    background-color: #C4BBB8 !important;
+}
+
+.display-3{ /* jumbrotron text */
+    text-align: center;
+}
+
+.lead {     /* jumbrotron text */
+    text-align: center;
+}
+.cardsrow {     /* box that fits the three cards */
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
+}
+
+.cards {    /* individual cards */
+    box-shadow: 0px 5px 5px #555;
+    text-align:"center"
+}
+
