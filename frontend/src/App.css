@@ -27,7 +27,6 @@
 }
 
 .head {
-    text-shadow: 2px 2px;
     height: 10vh;
     display: flex;
     flex-direction: column;
