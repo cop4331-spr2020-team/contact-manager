@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route } from 'react-router-dom';
 import './App.css';
 
 import Landing from './components/view/Landing.js';
-import Login from './components/auth/Login.js'
+import LoginPage from './components/auth/LoginPage.js'
 import Register from './components/auth/Register'
 
 import Contact from './components/view/Contact.js'
@@ -15,7 +15,7 @@ function App() {
     <div className="App">
 
       <Route exact path = '/' component={Landing} />
-      <Route exact path = '/login' component={Login} />
+      <Route exact path = '/login' component={LoginPage} />
       <Route exact path = '/register' component={Register} />
 
       <Route path = '/contact' component={Contact} />
