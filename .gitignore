@@ -37,6 +37,7 @@ packages/react-devtools-shell/dist
 
 # Other
 .vagrant/
+vagrant-ssh
 
 # Used for environment variables defining ports/usernames/etc...
 .env
