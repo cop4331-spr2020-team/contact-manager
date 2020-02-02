@@ -1,24 +1,15 @@
 const mongoose = require('mongoose')
+const config   = require('../config/config')
 
-// Load process.env variables for mongo.
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config();
-}
-
-const {
-	MONGO_USERNAME,
-	MONGO_PASSWORD,
-	MONGO_CLUSTER
-} = process.env
-
+// Mongoose options
 const options = {
   useNewUrlParser: true,
   connectTimeoutMS: 10000,
   useUnifiedTopology: true
 }
 
-
-const uri = `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_CLUSTER}-cwnt0.mongodb.net/test?retryWrites=true&w=majority`
+// uri of database to fetch/push
+const uri = `mongodb+srv://${config.MONGO_USERNAME}:${config.MONGO_PASSWORD}@${config.MONGO_CLUSTER}-cwnt0.mongodb.net/users?retryWrites=true&w=majority`
 console.log(`MOGNODB Server url: ${uri}`)
 
 mongoose
@@ -29,5 +20,4 @@ mongoose
 		console.error('Connection error', e.message)
 	})
 
-const db = mongoose.connection
-module.exports = db
+module.exports = mongoose.connection

@@ -1,0 +1,14 @@
+.input {
+    border-radius: 3px;
+    color: black;
+    text-align: left;
+    padding-left: 15px;
+}
+
+.login {
+    width: 100%;
+}
+
+.registerButton {
+    width: 100%;
+}

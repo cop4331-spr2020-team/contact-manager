@@ -1,60 +1,72 @@
 const Contact = require('../models/contact-model')
+const User    = require('../models/user-model')
 
-createContact = (req, res) => {
-	const body = req.body
+const { param, body, validationResult } = require('express-validator')
 
-	if (!body) {
-		return res.status(400).json({
-			success: false,
-			error: 'You must provide a contact with a name',
-		})
+createContact = async (req, res) => {
+	
+	const errors = validationResult(req)
+
+	if (!errors.isEmpty()) {
+		return res.status(400).json({ error: errors.array() })
 	}
 
-	const contact = new Contact(body)
-
-	if (!contact) {
-		return res.status(400).json({ success: false, error: err })
-	}
-
-	contact
+	const contact = new Contact(req.body)
+	
+	User.findById(req.user)
+	.then(user => {
+		if (!user) {
+			return res.status(417).json({ error: "UserNotFound"})
+		}
+		
+		user.contacts.push(contact._id)
+		user
 		.save()
 		.then(() => {
-			return res.status(201).json({
-				success: true,
-				id: contact.__id,
-				message: 'Contact created!',
-				data: contact,
+			contact
+			.save()
+			.then(() => {
+				return res.status(201).json({
+					success: true,
+					id: contact.__id,
+					message: 'Contact created!',
+					data: contact,
+				})
+			})
+			.catch(error => {
+				return res.status(400).json({
+					error,
+					message: 'Contact not created',
+				})
 			})
 		})
 		.catch(error => {
-			return res.status(400).json({
-				error,
-				message: 'Contact not created',
-			})
+			return res.status(400).json({ error: "ErrorSavingUser", error })
 		})
+	})
+	.catch(error => {
+		return res.status(400).json({ error: "UserNotFound", error })
+	})
 }
 
 updateContact = async (req, res) => {
-	const body = req.body
 
-	if (!body) {
-		return res.status(400).json({
-			success: false,
-			error: 'You must provide a body to update',
-		})
+	const errors = validationResult(req)
+
+	if (!errors.isEmpty()) {
+		return res.status(400).json({ error: errors.array() })
 	}
 
-	Contact.findOne({ _id: req.params.id }, (err, contact) => {
-		if (err) {
-			return res.status(404).json({
-				err,
-				message: 'Contact not found.'
-			})
-		}
+	Contact.findOne({ _id: req.params.id })
+	.then(contact => {
 
-		contact.name = body.name
-		contact.cell_phone_number = body.cell_phone_number
-		contact.home_address = body.home_address
+		try {
+			for (var key in req.body) {
+				contact[key] = req.body[key]
+			}
+		} catch (err) {
+			return res.status(400).json({ error: "InvalidContactKey" })
+		}
 
 		contact
 			.save()
@@ -72,10 +84,25 @@ updateContact = async (req, res) => {
 				})
 			})
 	})
+	.catch(error => {
+		if (error) {
+			return res.status(404).json({
+				err,
+				message: 'Contact not found.'
+			})
+		}
+	})
 }
 
 deleteContact = async (req, res) => {
-	await Contact.findOneAndDelete({ _id: req.params.id }, (err, contact) => {
+
+	const errors = validationResult(req)
+
+	if (!errors.isEmpty()) {
+		return res.status(400).json({ error: errors.array() })
+	}
+
+	Contact.findOneAndDelete({ _id: req.params.id }, (err, contact) => {
 		if (err) {
 			return res.status(400).json({
 				success: false,
@@ -94,10 +121,20 @@ deleteContact = async (req, res) => {
 			success: true,
 			data: contact
 		})
-	}).catch(err => console.log(err))
+	})
+	.catch(err => {
+		return res.status(400).json({ error: "UnknownError", err })
+	})
 }
 
 getContactById = async (req, res) => {
+	
+	const errors = validationResult(req)
+
+	if (!errors.isEmpty()) {
+		return res.status(400).json({ error: errors.array() })
+	}
+
 	await Contact.findOne({ _id: req.params.id }, (err, contact) => {
 		if (err) {
 			return res.status(400).json({
@@ -117,11 +154,21 @@ getContactById = async (req, res) => {
 			success: true,
 			data: contact
 		})
-	}).catch(err => console.log(err))
+	})
+	.catch(err => {
+		return res.status(400).json({ error: "UnknownError", err })
+	})
 }
 
-getContacts = async (req, res) => {
-	await Contact.find({}, (err, contacts) => {
+getContactsByUsername = async (req, res) => {
+	
+	const errors = validationResult(req)
+
+	if (!errors.isEmpty()) {
+		return res.status(400).json({ error: errors.array() })
+	}
+	const regex = new RegExp(req.body.name, 'i');
+	await Contact.find({ name: regex }, (err, contacts) => {
 		if (err) {
 			return res.status(400).json({
 				success: false,
@@ -129,12 +176,106 @@ getContacts = async (req, res) => {
 			})
 		}
 
+		if (!contacts) {
+			return res.status(404).json({
+				success: false,
+				error: 'No contact found.'
+			})
+		}
+
 		return res.status(200).json({
 			success: true,
 			data: contacts
 		})
-	}).catch(err => console.log(err))
+	})
+	.catch(err => {
+		return res.status(400).json({ error: "UnknownError", err })
+	})
 }
+
+getContacts = async (req, res) => {
+
+	const errors = validationResult(req)
+
+	if (!errors.isEmpty()) {
+		return res.status(400).json({ error: errors.array() })
+	}
+
+	return User.findById(req.user)
+		.then(user => {
+			if (!user) {
+				return res.status(400).json({ error: "UserNotFound"})
+			}
+
+			return res.status(200).json({ contacts: user.contacts })
+		})
+		.catch(error => {
+			return res.status(400).json({ error: error })
+		})
+}
+
+validate = (method) => {
+	switch (method) {
+		case 'getContact': {
+			return [
+
+			]
+		}
+
+		case 'createContact': {
+			return [
+				body('name')
+				.exists()
+				.notEmpty()
+				.withMessage('Contacts require a name.'),
+			]
+		}
+
+		case 'updateContact': {
+			return [
+
+			]
+		}
+
+		case 'deleteContact': {
+			return [
+
+			]
+		}
+
+		case 'getContacts': {
+			return [
+
+			]
+		}
+
+		case 'getContactsByUsername': {
+			return [
+
+			]
+		}
+	}
+}
+
+contactForUser = (req, res, next) => {
+
+	if (isEmpty(req.contacts)) {
+		return res.status(403).json({ error: "InvalidContactForUser" })
+	}
+
+	const contactId = req.params.id
+
+	if (contactId && !req.contacts.includes(contactId)) {
+		return res.status(403).json({ error: "InvalidContactForUser" })
+	}
+
+	next();
+}
+
+function isEmpty(obj) { 
+	for (var x in obj) { return false; }
+	return true;
+ }
 
 module.exports = {
 	createContact,
@@ -142,4 +283,7 @@ module.exports = {
 	deleteContact,
 	getContacts,
 	getContactById,
+	getContactsByUsername,
+	validate,
+	contactForUser
 }
