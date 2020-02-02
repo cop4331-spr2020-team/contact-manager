@@ -128,6 +128,22 @@ export default class Register extends Component {
 
 				<div className="row">
 					<div className="col">
+					<FormGroup>
+						<Input
+							name="email"
+							className="input"
+							type="text"
+							placeholder="Email"
+							value={this.state.email}
+							onChange={this.handleEmailChangeEvent}
+							invalid={this.state.isEmailValid}
+						/>
+					</FormGroup>
+					</div>
+				</div>
+
+				<div className="row">
+					<div className="col">
 						<FormGroup>
 							<Input
 								name="password"
