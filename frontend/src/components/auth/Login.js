@@ -1,5 +1,5 @@
 import React, { useState, Component } from 'react';
-import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
+import { Button, Form, FormGroup, Label, Input, Spinner, FormFeedback } from 'reactstrap';
 import { Link, Redirect } from 'react-router-dom';
 import axios from 'axios';
 
@@ -13,51 +13,67 @@ export default class Login extends Component {
 			loginErrors: "",
 			isUsernameInvalid: false,
 			isPasswordInvalid: false,
+			loginSuccess: false,
+			loading:false,
 		};
 	}
 
 	handleLogin = (event) => {
+		
 		const { userName, password } = this.state;
-		if ((userName === "") || (password === "")) { // if submitted without any input give error
-			//setError(true);
-			//setErrorMsg("Invalid Username/Password");
-			return;
-		}
-		// in user-router "/login" route uses get, but i couldnt make it work so i changed to put instead
+		this.setState({loading:true});
+		// if ((userName === "") || (password === "")) { // if submitted without any input give error
+		// 	this.setState({
+		// 		isUsernameInvalid: true,
+		// 		isPasswordInvalid: true,
+		// 		loading: false
+		// 	})
+		// }
+
 		// Retrieve user from backend
-		axios.post("/api/auth/login", {
+		axios.post("http://localhost:8080/api/auth/login", {
 			username: userName,
 			password: password
 		})
 		.then(result => {
 			if (result.status === 200) {
-				console.log('login success')
-				return <Redirect to="/contacts"/> // Redirect after login
+				console.log('login success');
+				this.setState({loginSuccess: true});
 			}
 		})
 		.catch(error => {
 			console.log(error.response.data)
-			/*
-			setError(true);
-			setErrorMsg("Invalid Username/Password");
-			setUsername("");
-			setPassword("");
-			*/
+			this.setState({
+				loading:false,
+				isPasswordInvalid: true,
+				password:""
+			});
 		});
 	}
 
 	handleUsernameChange = (event) => {
-		this.setState({ userName: event.target.value})
+		this.setState({ 
+			userName: event.target.value
+		})
 	}
 
 	handlePasswordChange = (event) => {
-		this.setState({ password: event.target.value})
+		this.setState({ 
+			password: event.target.value,
+			isPasswordInvalid: false
+		})
 	}
 
 	render() {
+		const { isUsernameInvalid, isPasswordInvalid } = this.state;
+
+		if(this.state.loginSuccess) {
+			return <Redirect to="/contacts"/> // Redirect after login
+		}
+
 		return (
 			<Form className="login">
-				<FormGroup>
+				<FormGroup>		
 					<Label>Username</Label>
 					<Input
 						className="input"
@@ -76,12 +92,19 @@ export default class Login extends Component {
 						onChange={this.handlePasswordChange}
 						invalid={this.state.isPasswordInvalid}
 					/>
+					{isPasswordInvalid && <FormFeedback >Invalid Username/Password</FormFeedback>} {/*Error if login is not successful*/}
 				</FormGroup>
-				{/*<Label>{errorMsg}</Label>*/}
-				<Button className="btn-lg btn-dark btn-block" onClick={this.handleLogin}>Login</Button>
+
+				<Button className="btn-lg btn-dark btn-block" 
+					onClick={this.handleLogin} 
+					disabled={this.state.loading || this.state.userName === "" || this.state.password === ""} // Disable button if fields are empty or when loading
+					>
+					{this.state.loading && <Spinner color="primary"/>} {/*Loading animation*/}
+					Login
+				</Button>
 	
 				<div  className="p-2">
-					<Link to="/register">Sign Up</Link> {/*needs to be linked*/}
+					<Link to="/register">Sign Up</Link>
 				</div>
 			</Form>
 		);
