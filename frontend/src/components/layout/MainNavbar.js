@@ -13,20 +13,15 @@ export default class MainNavbar extends Component {
 
         return (
             <Navbar className="dark-navbar justify-content-left">
-                <Navbar.Brand className="justify-content-left" style={navLinkStyle} href="/">
-                    <img
-                        className="icon"
-                        src='/coolbeans.png'
-                    />
+                <Navbar.Brand
+                    className="justify-content-left"
+                    style={navLinkStyle}
+                    href="/"
+                >
+                    <img className="icon" src="/coolbeans.png" />
                 </Navbar.Brand>
-                <Navbar.Collapse className="dark-navbar justify-content-end">
-                </Navbar.Collapse>
-                <Nav className="mr-auto">
-                    <Nav.Link style={navLinkStyle} activeStyle={navLinkStyle} href="/login">Login</Nav.Link>
-                </Nav>
             </Navbar>
         )
     };
-    
 }
 
