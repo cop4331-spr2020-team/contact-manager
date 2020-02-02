@@ -2,6 +2,7 @@
     padding-bottom: 20vh;
     background-image: url('/background.jpg');
 }
+
 .dark-navbar {
     background-color: transparent;
     border-color: black;

@@ -18,7 +18,6 @@ export default class Login extends Component {
 
 	handleLogin = (event) => {
 		const { userName, password } = this.state;
-
 		if ((userName === "") || (password === "")) { // if submitted without any input give error
 			//setError(true);
 			//setErrorMsg("Invalid Username/Password");
@@ -31,11 +30,9 @@ export default class Login extends Component {
 			password: password
 		})
 		.then(result => {
-			
 			if (result.status === 200) {
-				console.log(result.data);
-				// Token needs to be stored
-			 	//setLogin(true);
+				console.log('login success')
+				return <Redirect to="/contacts"/> // Redirect after login
 			}
 		})
 		.catch(error => {
