@@ -14,11 +14,11 @@ const { body, validationResult } = require('express-validator');
 
 authenticate = async (req, res, next) => {
 
-	if (!req.header('Authorization')) {
+	if (!req.cookies.jwt) {
 		return res.status(401).send({ error: 'TokenMissing' })
 	}
 
-	var token = req.header('Authorization').split(' ')[1]
+	var token = req.cookies.jwt
 	var payload = null
 
 	try {
@@ -79,10 +79,7 @@ login = async (req, res) => {
 						expiresIn: 31556926
 					},
 					(err, token) => {
-						res.json({
-							success: true,
-							token: token
-						})
+						res.cookie('jwt', token).json({ success: true })
 					}
 				)
 			} 
@@ -123,7 +120,9 @@ register = async (req, res) => {
 
 			newUser
 				.save()
-				.then(newUser => res.status(201).json(newUser))
+				.then(newUser => {
+					res.status(201).json(newUser)
+				})
 				.catch(err => res.status(500).json(err))
 		})
 	})
