@@ -73,7 +73,7 @@ class Landing extends Component {
 								<div className="infoSection">
 								<h1 style={{fontSize: '20px', fontWeight: 'bold'}}>What was this website built for?</h1>
 									This was built by a team for UCF COP 4331 course, for Project 1.
-									Thanks for the contributions by Marlon Calvo, Zach Tatman, Keanu, Xiakin, and Lauryn.
+									Contributors: Marlon Calvo, Zach Tatman, Keanu Zeng, Xiaojin Dai, Huy Pham, and Lauryn Landkrohn.
 								</div>
 							</div>
 						</div>
