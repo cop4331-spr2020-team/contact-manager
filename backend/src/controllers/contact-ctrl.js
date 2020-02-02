@@ -160,6 +160,39 @@ getContactById = async (req, res) => {
 	})
 }
 
+getContactsByUsername = async (req, res) => {
+	
+	const errors = validationResult(req)
+
+	if (!errors.isEmpty()) {
+		return res.status(400).json({ error: errors.array() })
+	}
+	const regex = new RegExp(req.body.name, 'i');
+	await Contact.find({ name: regex }, (err, contacts) => {
+		if (err) {
+			return res.status(400).json({
+				success: false,
+				error: err
+			})
+		}
+
+		if (!contacts) {
+			return res.status(404).json({
+				success: false,
+				error: 'No contact found.'
+			})
+		}
+
+		return res.status(200).json({
+			success: true,
+			data: contacts
+		})
+	})
+	.catch(err => {
+		return res.status(400).json({ error: "UnknownError", err })
+	})
+}
+
 getContacts = async (req, res) => {
 
 	const errors = validationResult(req)
@@ -215,6 +248,12 @@ validate = (method) => {
 
 			]
 		}
+
+		case 'getContactsByUsername': {
+			return [
+
+			]
+		}
 	}
 }
 
@@ -244,6 +283,7 @@ module.exports = {
 	deleteContact,
 	getContacts,
 	getContactById,
+	getContactsByUsername,
 	validate,
 	contactForUser
 }
