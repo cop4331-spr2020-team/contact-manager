@@ -11,7 +11,7 @@ createContact = (req, res) => {
 	}
 
 	const contact = new Contact(body)
-
+	
 	if (!contact) {
 		return res.status(400).json({ success: false, error: err })
 	}

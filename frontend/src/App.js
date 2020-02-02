@@ -2,6 +2,7 @@ import React from 'react';
 import AppNavbar from './components/AppNavbar';
 import ContactList from './components/ContactList';
 import ItemModal from './components/ItemModal';
+import SearchBar from './components/SearchBar';
 import { Container } from 'reactstrap';
 
 // Redux dependencies
@@ -17,7 +18,9 @@ function App() {
     <Provider store={store}>
     <div className="App">
       <AppNavbar />
-      <Container>
+      <Container
+      style={{border: '2px solid red'}}>
+        <SearchBar />
         <ItemModal />
         <ContactList />
       </Container>

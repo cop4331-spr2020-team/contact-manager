@@ -11,106 +11,102 @@ import {
     Input} from 'reactstrap';
     import {connect} from 'react-redux';
     import { addItem } from '../actions/itemActions'
-    import uuid from 'uuid';
 
-    class ItemModal extends Component {
+class ItemModal extends Component {
 
-        state = {
-            modal: false,
-            name: '',
-            phone: '',
-            email: ''
-
-
-        }
-
-        toggle = () => {
-            this.setState({
-                modal: !this.state.modal
-            });
-        }
-
-        onChange = (e) => {
-            this.setState({ [e.target.name]: e.target.value });
-            this.setState({ [e.target.phone]: e.target.value });
-            this.setState({ [e.target.email]: e.target.value });
-            
-        }
-
-        onSubmit = (e) => {
-            e.preventDefault();
-
-            const newItem = {
-                id: uuid(),
-                name: this.state.name,
-                phone: this.state.phone,
-                email: this.state.email
-            }
-
-            // Add item via addItem action
-            this.props.addItem(newItem);
-
-            // Close the modal
-            this.toggle();
-        }
-
-        render (){
-            return(
-                <div>
-                    <Button 
-                    color="primary"
-                    style={{marginBottom: '2rem'}}
-                    onClick={this.toggle}>Create Contact
-                    </Button>
-
-                    <Modal
-                        isOpen={this.state.modal}
-                        toggle={this.toggle}
-                    >
-                        <ModalHeader toggle={this.toggle}>Create Contact</ModalHeader>
-                        <ModalBody>
-                            <Form onSubmit={this.onSubmit}>
-                                <FormGroup>
-                                    <Label for="contact">Name</Label>
-                                    <Input 
-                                        type="text"
-                                        name="name"
-                                        id="contact"
-                                        placeholder="Enter a name"
-                                        onChange={this.onChange}
-                                    />
-                                    <Label for="phone">Phone</Label>
-                                    <Input 
-                                        type="text"
-                                        name="phone"
-                                        id="phone"
-                                        placeholder="### ### ###"
-                                        onChange={this.onChange}
-                                    />
-                                    <Label for="email">Email</Label>
-                                    <Input 
-                                        type="text"
-                                        name="email"
-                                        id="email"
-                                        placeholder="JohnSmith@gmail.come"
-                                        onChange={this.onChange}
-                                    />
-                                    <Button
-                                    color="success"
-                                    style={{marginTop: '2rem'}}
-                                    block>
-                                    Save</Button>
-                                </FormGroup>
-                            </Form>
-                        </ModalBody>
-                    </Modal>
-                </div>
-            );
-        }
+    state = {
+        modal: false,
+        name: '',
+        cell_phone_number: '',
+        email: ''
     }
 
-    const mapStateToProps = state => ({
-        item: state.item
-    });
+    toggle = () => {
+        this.setState({
+            modal: !this.state.modal
+        });
+    }
 
-    export default connect(mapStateToProps, { addItem })(ItemModal);
+    onChange = (e) => {
+        this.setState({ [e.target.name]: e.target.value });     
+    }
+
+    onSubmit = (e) => {
+        e.preventDefault();
+
+        const newItem = {
+            name: this.state.name,
+            cell_phone_number: this.state.cell_phone_number,
+            email: this.state.email
+        }   
+
+        // console.log(newItem)
+        // Add item via addItem action
+        this.props.addItem(newItem);
+
+        // Close the modal
+        this.toggle();
+    }
+
+    render (){
+        return(
+            <div>
+                <Button 
+                id="add-item-btn"
+                color="primary"
+                style={{marginBottom: '1rem', maxWidth: '50%'}}
+                onClick={this.toggle}
+                block>Create Contact
+                </Button>
+
+                <Modal
+                    isOpen={this.state.modal}
+                    toggle={this.toggle}
+                >
+                    <ModalHeader toggle={this.toggle}>Create Contact</ModalHeader>
+                    <ModalBody>
+                        <Form onSubmit={this.onSubmit}>
+                            <FormGroup>
+                                <Label for="contact-name">Name</Label>
+                                <Input 
+                                    type="text"
+                                    name="name"
+                                    id="contact-name"
+                                    placeholder="Enter a name"
+                                    onChange={this.onChange}
+                                />
+                                <Label for="contact-phone">Phone</Label>
+                                <Input 
+                                    type="text"
+                                    name="cell_phone_number"
+                                    id="contact-phone"
+                                    placeholder="### ### ###"
+                                    onChange={this.onChange}
+                                />
+                                <Label for="contact-email">Email</Label>
+                                <Input 
+                                    type="text"
+                                    name="email"
+                                    id="contact-email"
+                                    placeholder="JohnSmith@gmail.come"
+                                    onChange={this.onChange}
+                                />
+                                <Button
+                                color="success"
+                                style={{marginTop: '2rem'}}
+                                block>
+                                Save</Button>
+                            </FormGroup>
+                        </Form>
+                    </ModalBody>
+                </Modal>
+            </div>
+        );
+    }
+}
+
+const mapStateToProps = state => ({
+    item: state.item
+});
+
+export default connect(mapStateToProps, { addItem })(ItemModal);

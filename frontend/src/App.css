@@ -1,16 +1,33 @@
-
-i {
+/* List Item dropdown caret */
+#icon-caret-down {
     border: solid gray;
     border-width: 0 2px 2px 0;
     display: inline-block;
     transform: rotate(45deg);
     padding: 3px;
-  }
+    transition:box-shadow 0.2s ease-out;
+}
 
+#icon-caret-down:hover{
+    box-shadow:0px 0px 15px lightgrey;
+}
+
+#icon-caret-down:active{
+    box-shadow:0px 0px 10px lightgrey;
+}
+
+#icon-caret-down:focus{
+    outline:none;
+}
+
+
+
+/* Delete Button */
 .remove-btn {
     margin-right: 0.5rem;
 }
 
+/* Transition for deleting contact */
 .fade-enter {
     opacity: 0.01;
 }
@@ -29,27 +46,105 @@ i {
     transition: opacity 200ms ease-in;
 }
 
+
+
+/* Toggle list form button */
+#toggle-btn {
+    border:none;
+    background-color: transparent;
+}
+
+#toggle-btn:focus, #toggle-btn:active {
+    outline: none !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+}
+
+
+
+/* Add Button */
+#add-item-btn{
+    position: relative; 
+    margin: 2rem auto;
+    border:none;
+    transition:box-shadow 0.2s ease-out;
+}
+
+#add-item-btn:hover{
+    box-shadow:0px 0px 15px lightgrey;
+}
+
+#add-item-btn:active{
+    box-shadow:0px 0px 10px lightgrey;
+}
+
+#add-item-btn:focus{
+    outline:none;
+}
+ 
+
+
+/* Contains list group of contacts */
 .container-test {
     position: relative; 
     margin: 0 auto;
-    /* border: 2px solid green; */
+    border: 2px solid green;
     /* top: 15rem; */
-    width: 100%;
+    width: 50%;
 }
 
+/* List group containing contacts */
 .list-group {
     position: relative;
     margin: 0 auto;
     width: 100%;      
-    /* border: 2px solid red; */
+    border: 2px solid red;
 }
 
-.name-lbl {
-    position: relative;
-    /* border: 2px solid blueviolet; */
+/* List group item */
+#list-group-item{
+    border-radius: 4px;
+    transition:box-shadow 0.2s ease-out;
+}
+
+#list-group-item:hover{
+    box-shadow:0px 0px 10px lightgrey inset;
+}
+
+#list-group-item:active{
+    box-shadow:0px 0px 10px lightgrey inset;
+}
+
+#list-group-item:focus{
+    box-shadow:0px 0px 10px lightgrey inset;
+    outline:none;
+}
+
+/* Contact label */
+#name-label {
+    position: 'relative';
+    margin: '0 auto';
+    cursor: pointer;
+}
+
+#name-label:focus, #name-label:active {
+    outline: none !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+}
+
+
+/* Contact from transition */
+.list-group-item-inner{
+    transition: 0.2s ease-out;
 }
 
 .group-text {
     width: 10rem;
+}
+
+/* Search Bar */
+#search-bar {
+    border-radius: 12px;
 }
 
