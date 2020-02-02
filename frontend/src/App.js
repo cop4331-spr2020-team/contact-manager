@@ -1,25 +1,31 @@
 import React from 'react';
-import logo from './logo.svg';
+import AppNavbar from './components/AppNavbar';
+import ContactList from './components/ContactList';
+import ItemModal from './components/ItemModal';
+import SearchBar from './components/SearchBar';
+import { Container } from 'reactstrap';
+
+// Redux dependencies
+import { Provider } from 'react-redux';
+import store from './store';
+
+// ReactStrap dependencies
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
 function App() {
   return (
+    <Provider store={store}>
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <AppNavbar />
+      <Container
+      style={{border: '2px solid red'}}>
+        <SearchBar />
+        <ItemModal />
+        <ContactList />
+      </Container>
     </div>
+    </Provider>
   );
 }
 

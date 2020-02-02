@@ -3,12 +3,26 @@ const User    = require('../models/user-model')
 
 const { param, body, validationResult } = require('express-validator')
 
+<<<<<<< HEAD
 createContact = async (req, res) => {
 	
 	const errors = validationResult(req)
 
 	if (!errors.isEmpty()) {
 		return res.status(400).json({ error: errors.array() })
+=======
+	if (!body) {
+		return res.status(400).json({
+			success: false,
+			error: 'You must provide a contact with a name',
+		})
+	}
+
+	const contact = new Contact(body)
+	
+	if (!contact) {
+		return res.status(400).json({ success: false, error: err })
+>>>>>>> contactcard
 	}
 
 	const contact = new Contact(req.body)

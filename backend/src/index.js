@@ -1,8 +1,14 @@
+<<<<<<< HEAD
 const express          = require('express')
 const bodyParser       = require('body-parser')
 const cors             = require('cors')
 const logger           = require('morgan')
 const config           = require('./config/config')
+=======
+const bodyParser = require('body-parser');
+const express = require('express');
+const cors = require('cors');
+>>>>>>> contactcard
 
 // Initialize express.
 const app = express()
