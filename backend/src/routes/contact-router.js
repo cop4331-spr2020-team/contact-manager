@@ -41,4 +41,11 @@ router.get(
     contactController.getContacts
 )
 
+router.get(
+    '/contactsByUsername',
+    authenticate,
+    contactController.validate('getContactsByUsername'),
+    contactController.getContactsByUsername
+)
+
 module.exports = router
