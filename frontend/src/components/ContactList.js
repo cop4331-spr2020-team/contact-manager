@@ -35,7 +35,23 @@ class ContactList extends Component {
         }
 
         return (
+
+
             <Container className="container-test">
+
+            <div>
+            <InputGroup className="search-input-form">
+            <Input id="search-bar"
+            placeholder="Search for contact..."
+            ></Input>
+            <InputGroupAddon addonType="append">
+                <Button id="search-btn"
+                color="primary" 
+                type="submit">
+                <i class="fa fa-search"></i></Button>
+            </InputGroupAddon>
+            </InputGroup>   
+            </div>
                 <ListGroup className="list-group">
                     <TransitionGroup className="contact-list">
                         { data && data.map(( { _id, name, cell_phone_number, email }) => (
@@ -102,7 +118,7 @@ class ContactList extends Component {
                                         
                                         <InputGroup>
                                         <InputGroupAddon>
-                                        <ButtonGroup style={{border: '2px solid red', position: 'relative'}}>
+                                        <ButtonGroup style={{ position: 'relative'}}>
                                         <Button
                                         className="edit-btn"
                                         size="sm"

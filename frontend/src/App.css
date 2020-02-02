@@ -88,7 +88,7 @@
 .container-test {
     position: relative; 
     margin: 0 auto;
-    border: 2px solid green;
+    /* border: 2px solid green; */
     /* top: 15rem; */
     width: 50%;
 }
@@ -98,7 +98,7 @@
     position: relative;
     margin: 0 auto;
     width: 100%;      
-    border: 2px solid red;
+    /* border: 2px solid red; */
 }
 
 /* List group item */
@@ -143,8 +143,26 @@
     width: 10rem;
 }
 
+/* Search bar container */
+.search-container {
+    position: relative; 
+    margin: 0 auto;
+}
+.search-input-form{
+    position: relative; 
+    margin: 0 auto;
+}
 /* Search Bar */
 #search-bar {
-    border-radius: 12px;
+    position: relative; 
+    padding: 6px;
+    margin: 0 auto;
+    max-width: 70%;
+    border-radius: 20px;
+}
+
+#search-btn {
+    position: absolute;
+    border-radius: 20px;
 }
 

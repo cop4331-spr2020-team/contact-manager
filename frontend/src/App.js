@@ -20,7 +20,6 @@ function App() {
       <AppNavbar />
       <Container
       style={{border: '2px solid red'}}>
-        <SearchBar />
         <ItemModal />
         <ContactList />
       </Container>

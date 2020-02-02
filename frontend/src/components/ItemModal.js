@@ -54,11 +54,10 @@ class ItemModal extends Component {
                 <Button 
                 id="add-item-btn"
                 color="primary"
-                style={{marginBottom: '1rem', maxWidth: '50%'}}
+                style={{marginBottom: '1rem', width: '47%'}}
                 onClick={this.toggle}
                 block>Create Contact
                 </Button>
-
                 <Modal
                     isOpen={this.state.modal}
                     toggle={this.toggle}
