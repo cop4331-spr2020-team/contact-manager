@@ -1,13 +1,16 @@
 import React, { Component } from "react";
-import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
+import { Button, Form, FormGroup, Row, Col, Label, Input, FormFeedback } from 'reactstrap';
 import { Link } from "react-router-dom";
 import axios from "axios";
+
+import './Register.css'
 export default class Register extends Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {
-			name: '',
+			firstName: '',
+			lastName: '',
 			email: '',
 			userName: '',
 			password: '',
@@ -55,11 +58,11 @@ export default class Register extends Component {
 	}
 
 	handleSubmit = (event) => {
-		const { name, email, userName, password, confirmationPassword } = this.state;
+		const { firstName, lastName, email, userName, password, confirmationPassword } = this.state;
 		
 		// try to register.
 		axios.put('/api/auth/register', {
-			name: name,
+			name: firstName + ' ' + lastName,
 			email: email,
 			username: userName,
 			password: password,
@@ -76,67 +79,91 @@ export default class Register extends Component {
 
 	render() {
 		return (
-			<Form className="login">
-				<Link to="/" className="btn-flat waves-effect">
-					<i className="material-icons left">Back to home</i>
-				</Link>
-				<FormGroup>
-					<Label>Name</Label>
-					<Input
-						name="name"
-						className="input"
-						type="text"
-						value={this.state.name}
-						onChange={this.handleNameChangeEvent}
-						invalid={this.state.isNameInvalid}
-					/>
-				</FormGroup>
-				<FormGroup>
-					<Label>Email</Label>
-					<Input
-						name="email"
-						className="input"
-						type="text"
-						value={this.state.email}
-						onChange={this.handleEmailChangeEvent}
-						invalid={this.state.isEmailValid}
-					/>
-				</FormGroup>
-				<FormGroup>
-					<Label>Username</Label>
-					<Input
-						name="userName"
-						className="input"
-						type="text"
-						value={this.state.username}
-						onChange={this.handleUsernameChangeEvent}
-						invalid={this.state.isUsernameInvalid}
-					/>
-				</FormGroup>
-				<FormGroup>
-					<Label>Password</Label>
-					<Input
-						name="password"
-						className="input"
-						type="password"
-						value={this.state.password}
-						onChange={this.handlePasswordChangeEvent}
-						invalid={this.state.isPasswordInvalid}
-					/>
-				</FormGroup>
-				<FormGroup>
-					<Label>Confirm Password</Label>
-					<Input
-						name="confirmationPassword"
-						className="input"
-						type="password"
-						value={this.state.confirmationPassword}
-						onChange={this.handleConfirmationPasswordChangeEvent}
-						invalid={this.state.isConfirmationPasswordInvalid}
-					/>
-				</FormGroup>
-				<Label>{this.state.loginErrors}</Label>
-				<Button className="btn-lg btn-dark btn-block" onClick={this.handleSubmit}>Register</Button>
+			<Form className="register">
+
+				<div className="row">
+					<div className="col d-flex justify-content-center">
+						<FormGroup>
+							<Input
+								name="firstName"
+								className="input"
+								type="text"
+								placeholder="First Name"
+								value={this.state.name}
+								onChange={this.handleNameChangeEvent}
+								invalid={this.state.isNameInvalid}
+							/>
+						</FormGroup>
+					</div>
+					<div className="col d-flex justify-content-center">
+						<FormGroup>
+							<Input
+								name="lastName"
+								className="input"
+								type="text"
+								placeholder="Last Name"
+								value={this.state.name}
+								onChange={this.handleNameChangeEvent}
+								invalid={this.state.isNameInvalid}
+							/>
+						</FormGroup>
+					</div>
+				</div>
+
+				<div className="row">
+					<div className="col">
+						<FormGroup>
+							<Input
+								name="userName"
+								className="input"
+								type="text"
+								placeholder="Username"
+								value={this.state.username}
+								onChange={this.handleUsernameChangeEvent}
+								invalid={this.state.isUsernameInvalid}
+							/>
+						</FormGroup>
+					</div>
+				</div>
+
+				<div className="row">
+					<div className="col">
+						<FormGroup>
+							<Input
+								name="password"
+								className="input"
+								type="password"
+								placeholder="Password"
+								value={this.state.password}
+								onChange={this.handlePasswordChangeEvent}
+								invalid={this.state.isPasswordInvalid}
+							/>
+							<FormFeedback valid={this.state.isPasswordInvalid}>Hmm</FormFeedback>
+						</FormGroup>
+					</div>
+				</div>
+
+				<div className="row">
+					<div className="col">
+						<FormGroup>
+							<Input
+								name="confirmationPassword"
+								className="input"
+								type="password"
+								placeholder="Confirm Password"
+								value={this.state.confirmationPassword}
+								onChange={this.handleConfirmationPasswordChangeEvent}
+								invalid={this.state.isConfirmationPasswordInvalid}
+							/>
+						</FormGroup>
+					</div>
+				</div>
+
+				<div className="row">
+					<div className="col d-flex justify-content-center">
+						<Button color="success" className="registerButton" onClick={this.handleSubmit}>Create Account</Button>
+					</div>
+				</div>
 			</Form>
 		);
 	}

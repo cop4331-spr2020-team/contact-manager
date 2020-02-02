@@ -1,0 +1,72 @@
+.background {
+    padding-bottom: 20vh;
+    background-image: url('/background.jpg');
+}
+.dark-navbar {
+    background-color: transparent;
+    border-color: black;
+    border-width: 5px;
+    border-radius: 10px;
+}
+
+.infoSection {
+    color: lightslategray;
+    font-size: 13px;
+    text-align: center;
+}
+
+.headerInfo {
+    color: white;
+    font-weight: bold;
+    font-size: 35px;
+}
+
+.headerInfo2 {
+    color: white;
+    font-weight: normal;
+    font-size: 15px;
+    margin-top: 10px;
+}
+
+.info {
+    background-color: transparent;
+    text-align: center;
+}
+
+.main {
+    margin-top: 30px;
+}
+
+.AuthForm {
+    margin: 0 auto;
+    min-width: 500px;
+    max-width: 900px;
+}
+
+.loginButton {
+    border-width: 2px;
+    border-color: white;
+    color: white;
+    border-radius: 4px;
+    border-style: solid;
+    background-color: transparent;
+}
+
+.loginButton {
+    border-width: 2px;
+    border-color: white;
+    color: white;
+    border-radius: 4px;
+    border-style: solid;
+    background-color: transparent;
+}
+
+.loginSection {
+    margin: 0 auto;
+    max-width: 45%;
+}
+
+.loginDivide {
+    margin-top: 35px;
+    margin-bottom: 35px;
+}
