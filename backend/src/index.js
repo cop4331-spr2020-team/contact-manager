@@ -3,10 +3,12 @@ const bodyParser       = require('body-parser')
 const cors             = require('cors')
 const logger           = require('morgan')
 const config           = require('./config/config')
+const cookiesParser    = require('cookie-parser')
 
 // Initialize express.
 const app = express()
 app.use(cors());
+app.use(cookiesParser())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
@@ -24,8 +26,8 @@ app.get('/api/version', function (req, res, next) {
     next()
 })
 
-app.use('/auth', userRouter)
-app.use('/api', contactRouter)
+app.use('/api/auth', userRouter)
+app.use('/api/', contactRouter)
 
 // Setup listener on port.
 app.listen(config.LISTEN_PORT, () => {

@@ -8,7 +8,7 @@ router.put(
     userController.validate('createUser'),
     userController.register
 )
-router.get(
+router.post(
     '/login',
     userController.validate('loginUser'), 
     userController.login
