@@ -80,31 +80,48 @@ export default class Register extends Component {
 			if (password.length < 5)
 				this.setState({
 					passwordError: 'Password must be 5 characters minumum.',
-					isPasswordInvalid: true
+					isPasswordInvalid: true,
+					password: '.',
+					confirmationPassword:''
 			})
 			else {
 				this.setState({
 					passwordError: 'Password can only have alphanumeric, or @$.!%*#?&, symbols.\
 					Must have at least one uppercase, one lowercase, and one symbol.',
-					isPasswordInvalid: true
+					isPasswordInvalid: true,
+					password: '.',
+					confirmationPassword:''
 			})
 			}
 		}
-
-		axios.put('http://localhost:8080/api/auth/register', {
+		else {
+			this.setState({
+				password: hash(password, { algorithm: 'md5', encoding: 'base64' }),
+				confirmationPassword: hash(confirmationPassword, { algorithm: 'md5', encoding: 'base64' })
+			})
+		}
+		
+		axios.put('/api/auth/register', {
 			name: firstName + ' ' + lastName,
 			email: email,
 			username: userName,
-			password: hash(password, { algorithm: 'md5', encoding: 'base64' }),
-			passwordConfirmation: hash(confirmationPassword, { algorithm: 'md5', encoding: 'base64' })
+			password: password,
+			passwordConfirmation: confirmationPassword
 		})
 		.then((response) => {
 			console.log('Hooray!')
 			this.setState({successfulRegister: true})	// Set to true so we can redirect to login page
 		})
 		.catch((error) => {
-			console.log("Boohoo!")
-			console.log(error.response.data)
+			
+			if (!error.response) {
+				return;
+			}
+			this.setState({
+				password:'',
+				confirmationPassword:''
+			})
+			//console.log(error.response.data)
 			// Loops through array of error messages to display in the form
 			for(var i = 0; i < error.response.data.errors.length; i++)
 			{	
