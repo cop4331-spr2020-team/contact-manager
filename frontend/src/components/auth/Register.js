@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Button, Form, FormGroup, Row, Col, Label, Input, FormFeedback } from 'reactstrap';
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import axios from "axios";
 
 import './Register.css'
@@ -16,11 +16,16 @@ export default class Register extends Component {
 			password: '',
 			confirmationPassword: '',
 			loginErrors: '',
+			userNameError:'',
+			emailError:'',
+			passwordError:'',
+			passwordConfirmationError:'',
 			isEmailValid: false,
 			isNameInvalid: false,
 			isUsernameInvalid: false,
 			isPasswordInvalid: false,
 			isConfirmationPasswordInvalid: false,
+			successfulRegister: false
 		};
 
 		this.handleChange = this.handleChange.bind(this);
@@ -40,28 +45,34 @@ export default class Register extends Component {
 	handleEmailChangeEvent = (event) => {
 		// handle name change.
 		this.handleChange(event)
+		this.setState({isEmailValid: false})
+					
 	}
 
 	handleUsernameChangeEvent = (event) => {
 		// handle username change.
 		this.handleChange(event)
+		this.setState({isUsernameInvalid: false})
 	}
 
 	handlePasswordChangeEvent = (event) => {
 		// handle password change.
 		this.handleChange(event)
+		this.setState({isPasswordInvalid: false})
 	}
 
 	handleConfirmationPasswordChangeEvent = (event) => {
 		// handle confirmation password.
 		this.handleChange(event)
+		this.setState({isConfirmationPasswordInvalid: false})
+		
 	}
 
 	handleSubmit = (event) => {
 		const { firstName, lastName, email, userName, password, confirmationPassword } = this.state;
 		
 		// try to register.
-		axios.put('/api/auth/register', {
+		axios.put('http://localhost:8080/api/auth/register', {
 			name: firstName + ' ' + lastName,
 			email: email,
 			username: userName,
@@ -70,14 +81,48 @@ export default class Register extends Component {
 		})
 		.then((response) => {
 			console.log('Hooray!')
+			this.setState({successfulRegister: true})	// Set to true so we can redirect to login page
 		})
 		.catch((error) => {
 			console.log("Boohoo!")
 			console.log(error.response.data)
+			// Loops through array of error messages to display in the form
+			for(var i = 0; i < error.response.data.errors.length; i++)
+			{	
+				if(error.response.data.errors[i].param === "username"){
+					this.setState({
+						userNameError: error.response.data.errors[i].msg,
+						isUsernameInvalid: true,
+					})
+				}
+				else if(error.response.data.errors[i].param === "email"){
+					this.setState({
+						emailError: error.response.data.errors[i].msg,
+						isEmailValid: true,
+					})
+				}
+				else if(error.response.data.errors[i].param === "password"){
+					this.setState({
+						passwordError: error.response.data.errors[i].msg,
+						isPasswordInvalid: true,
+					})
+				}
+				else if(error.response.data.errors[i].param === "passwordConfirmation"){
+					this.setState({
+						passwordConfirmationError: error.response.data.errors[i].msg,
+						isConfirmationPasswordInvalid: true,
+					})
+				}
+			}
+		
 		});
 	}
 
 	render() {
+		if (this.state.successfulRegister) {
+			return <Redirect to="/login"/>
+		}
+
 		return (
 			<Form className="register">
 
@@ -122,7 +167,9 @@ export default class Register extends Component {
 								onChange={this.handleUsernameChangeEvent}
 								invalid={this.state.isUsernameInvalid}
 							/>
+							<FormFeedback>{this.state.userNameError}</FormFeedback>
 						</FormGroup>
+						
 					</div>
 				</div>
 
@@ -138,6 +185,7 @@ export default class Register extends Component {
 							onChange={this.handleEmailChangeEvent}
 							invalid={this.state.isEmailValid}
 						/>
+						<FormFeedback>{this.state.emailError}</FormFeedback>
 					</FormGroup>
 					</div>
 				</div>
@@ -154,7 +202,7 @@ export default class Register extends Component {
 								onChange={this.handlePasswordChangeEvent}
 								invalid={this.state.isPasswordInvalid}
 							/>
-							<FormFeedback valid={this.state.isPasswordInvalid}>Hmm</FormFeedback>
+							<FormFeedback>{this.state.passwordError}</FormFeedback>
 						</FormGroup>
 					</div>
 				</div>
@@ -171,6 +219,7 @@ export default class Register extends Component {
 								onChange={this.handleConfirmationPasswordChangeEvent}
 								invalid={this.state.isConfirmationPasswordInvalid}
 							/>
+							<FormFeedback>{this.state.passwordConfirmationError}</FormFeedback>
 						</FormGroup>
 					</div>
 				</div>
