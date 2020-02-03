@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Redirect } from 'react-router-dom'
 import { Button } from "react-bootstrap";
 import { Navbar } from "react-bootstrap";
 import Register from '../auth/Register'
@@ -174,7 +175,7 @@ class Landing extends Component {
 
 		
 		return (
-			<ContactsListView perPage={2} />
+			<Redirect to={"/contacts"}/>
 		);
 	}
 }

@@ -35,7 +35,7 @@ export default class ContactView extends Component {
             console.log(response.data)
             if (response.data.success) {
                 this.setState({
-                    name: this.state.newName
+                    name: this.state.name
                 })
             }
         })
