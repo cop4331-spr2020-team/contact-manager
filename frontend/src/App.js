@@ -31,7 +31,7 @@ function App() {
         <NavRoute exact path = '/contacts' component={ContactsView} />
         <Route exact path = '/login' component={LoginPage} />
         <Route exact path = '/register' component={RegisterPage} />
-        <Route path = '/contact/:id' component={ContactView} />
+        <NavRoute path = '/contact/:id' component={ContactView} />
         <Route component={NoMatch} />
       </Switch>
     </div>
