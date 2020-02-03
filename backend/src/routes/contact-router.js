@@ -5,7 +5,7 @@ const contactController = require('../controllers/contact-ctrl')
 const authenticate = require('../controllers/user-ctrl').authenticate
 
 // Create / delete / update contacts.
-router.put(
+router.post(
     '/contact',
     authenticate,
     contactController.validate('createContact'),
@@ -26,7 +26,6 @@ router.delete(
     contactController.deleteContact
 )
 
-// Get contacts.
 router.get(
     '/contact/:id',
     authenticate,

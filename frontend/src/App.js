@@ -9,6 +9,7 @@ import Landing from './components/view/Landing';
 import LoginPage from './components/auth/LoginPage'
 import RegisterPage from './components/auth/RegisterPage'
 import NoMatch from './components/view/NoMatch'
+import ContactView from './components/view/ContactView'
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route exact path = '/' component={Landing} />
         <Route exact path = '/login' component={LoginPage} />
         <Route exact path = '/register' component={RegisterPage} />
+        <Route path = '/contact/:id' component={ContactView} />
         <Route component={NoMatch} />
       </Switch>
     </div>
