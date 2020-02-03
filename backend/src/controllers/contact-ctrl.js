@@ -110,13 +110,6 @@ deleteContact = async (req, res) => {
 			})
 		}
 
-		if (!contact) {
-			return res.status(404).json({
-				success:false,
-				error: 'Contact not found.'
-			})
-		}
-
 		return res.status(200).json({
 			success: true,
 			data: contact
