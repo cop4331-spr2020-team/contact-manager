@@ -5,7 +5,7 @@ import Register from '../auth/Register'
 
 import "./Landing.css";
 import axios from "axios";
-import ContactsView from "./ContactsView";
+import { ContactsListView } from "./ContactsView";
 class Landing extends Component {
 
 	constructor(props) {
@@ -174,26 +174,7 @@ class Landing extends Component {
 
 		
 		return (
-			<div>
-				<Navbar bg="dark" variant="dark">
-					<Navbar.Brand
-						className="justify-content-left"
-						style={navLinkStyle}
-						href="/"
-					>
-						<img className="icon" src="/coolbeans.png" />
-					</Navbar.Brand>
-					<Navbar.Collapse className="dark-navbar justify-content-end"></Navbar.Collapse>
-					<Button onClick={this.handleLogout} variant="outline-success" className="loginButton">Logout</Button>
-				</Navbar>
-				
-				<div className="container">
-					<div className="name">
-						Hello, {this.state.user}
-					</div>
-				</div>
-				
-			</div>
+			<ContactsListView perPage={2} />
 		);
 	}
 }
