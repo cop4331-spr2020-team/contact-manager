@@ -4,6 +4,9 @@ import { Link, Redirect } from "react-router-dom";
 import axios from "axios";
 
 import './Register.css'
+
+const passRegex = RegExp(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$.!%*#?&])[A-Za-z\d@$.!%*#?&]{5,}$/, "i");
+
 export default class Register extends Component {
 	constructor(props) {
 		super(props);
@@ -71,9 +74,23 @@ export default class Register extends Component {
 	handleSubmit = (event) => {
 		var hash = require('object-hash');
 		const { firstName, lastName, email, userName, password, confirmationPassword } = this.state;
-		hash(password, { algorithm: 'md5', encoding: 'base64' })
-		// try to register.
 		
+		// Password Error check
+		if (!(passRegex.test(password)) || password.length < 5) {
+			if (password.length < 5)
+				this.setState({
+					passwordError: 'Password must be 5 characters minumum.',
+					isPasswordInvalid: true
+			})
+			else {
+				this.setState({
+					passwordError: 'Password can only have alphanumeric, or @$.!%*#?&, symbols.\
+					Must have at least one uppercase, one lowercase, and one symbol.',
+					isPasswordInvalid: true
+			})
+			}
+		}
+
 		axios.put('http://localhost:8080/api/auth/register', {
 			name: firstName + ' ' + lastName,
 			email: email,
@@ -103,12 +120,12 @@ export default class Register extends Component {
 						isEmailValid: true,
 					})
 				}
-				else if(error.response.data.errors[i].param === "password"){
-					this.setState({
-						passwordError: error.response.data.errors[i].msg,
-						isPasswordInvalid: true,
-					})
-				}
+				// else if(error.response.data.errors[i].param === "password"){
+				// 	this.setState({
+				// 		passwordError: error.response.data.errors[i].msg,
+				// 		isPasswordInvalid: true,
+				// 	})
+				// }
 				else if(error.response.data.errors[i].param === "passwordConfirmation"){
 					this.setState({
 						passwordConfirmationError: error.response.data.errors[i].msg,
