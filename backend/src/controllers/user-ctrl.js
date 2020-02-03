@@ -2,6 +2,7 @@
 const bcrypt = require('bcrypt')
 const jwt    = require('jsonwebtoken')
 const moment = require('moment')
+var blacklist = require('express-jwt-blacklist');
 
 // Config data for jwt
 const config = require('../config/config')
@@ -10,7 +11,7 @@ const config = require('../config/config')
 const User   = require('../models/user-model')
 
 // Validation for data.
-const { body, validationResult } = require('express-validator');
+const { body, validationResult } = require('express-validator')
 
 authenticate = async (req, res, next) => {
 
@@ -34,11 +35,12 @@ authenticate = async (req, res, next) => {
 
 	User.findById(payload.id, function(err, user) {
 		if (!user) {
-			return res.status(404).send({ logged_in: false })
+			return req.status(404).send({ logged_in: false })
 		}
 		else {
 			req.logged_in = true;
 			req.user = payload.id;
+			req.name = user.name
 			req.username = user.username;
 			req.contacts = user.contacts;
 			next()
@@ -92,6 +94,10 @@ login = async (req, res) => {
 	})
 }
 
+logout = async (req, res) => {
+	return res.clearCookie('jwt').json({ success: true }).status(200)
+}
+
 register = async (req, res) => {
 
 	const errors = validationResult(req)
@@ -133,7 +139,8 @@ register = async (req, res) => {
 isLoggedIn = async (req, res) => {
 	res.status(200).json({
 		logged_in: req.logged_in,
-		user: req.username
+		user: req.username,
+		name: req.name
 	});
 }
 
@@ -204,6 +211,7 @@ validate = (method) => {
 module.exports = {
 	validate,
 	login,
+	logout,
 	register,
 	authenticate,
 	isLoggedIn,

@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import ContactCard from './ContactCard'
 import ContactPagination from './ContactPagination';
+import { Button } from "react-bootstrap";
+
 
 import { getContacts } from '../../actions/contactActions'
+import axios from "axios";
 class ContactsView extends Component {
 
     state = {
@@ -16,6 +19,23 @@ class ContactsView extends Component {
         getContacts(allContacts => {
           this.setState({ allContacts });
         });
+      }
+
+      handleAddUser = event => {   
+        console.log('hmmm')
+        axios.put('/api/contact', { 
+          name: "Cool", 
+          cell_phone_number: "hm" 
+        })
+        .then(response => {
+          console.log(response.data)
+          if (response.data.success) {
+            this.state.allContacts.push(response.data)
+          }
+        })
+        .catch(error => {
+          console.log(error)
+        })
       }
     
       onPageChanged = data => {
@@ -35,9 +55,7 @@ class ContactsView extends Component {
           totalPages
         } = this.state;
         const totalContacts = allContacts.length;
-    
-        if (totalContacts === 0) return null;
-    
+        
         const headerClass = [
           "text-dark py-2 pr-4 m-0",
           currentPage ? "border-gray border-right" : ""
@@ -50,6 +68,7 @@ class ContactsView extends Component {
             <div className="row d-flex flex-row py-5">
               <div className="w-100 px-4 py-5 d-flex flex-row flex-wrap align-items-center justify-content-between">
                 <div className="d-flex flex-row align-items-center">
+            						<Button onClick={this.handleAddUser}>Add user</Button>
                   <h2 className={headerClass}>
                     <strong className="text-secondary">{totalContacts}</strong>{" "}
                     Contacts

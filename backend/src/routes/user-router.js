@@ -18,5 +18,10 @@ router.get(
     userController.authenticate,
     userController.isLoggedIn
 )
+router.post(
+    '/logout',
+    userController.authenticate,
+    userController.logout
+)
 
 module.exports = router

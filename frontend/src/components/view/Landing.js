@@ -14,8 +14,38 @@ class Landing extends Component {
 		this.state = {
 			isAuthenticated: false,
 			isLoading: true,
-			user: {}
+			user: {},
+			name: {}
 		};
+	}
+
+	handleLogout = event => {
+		if (!this.state.isAuthenticated) {
+			return;
+		}
+
+		this.setState({
+			isLoading: true
+		})
+
+		axios.post('/api/auth/logout', { withCredentials: true})
+		.then(response => {
+			if (response.data.success) {
+				this.setState({
+					isAuthenticated: false,
+					isLoading: false,
+				})
+			} else {
+				this.setState({
+					isLoading: false,
+				})
+			}
+		})
+		.catch(error => {
+			this.setState({
+				isLoading: false
+			})
+		})
 	}
 
 	checkLoginStatus() {
@@ -25,7 +55,8 @@ class Landing extends Component {
 				this.setState({
 					isAuthenticated: true,
 					isLoading: false,
-					user: response.data.user
+					user: response.data.user,
+					name: response.data.name
 				});
 			} else if (!response.data.logged_in && this.state.isAuthenticated === true) {
 				this.setState({
@@ -144,8 +175,24 @@ class Landing extends Component {
 		
 		return (
 			<div>
-				Hello {this.state.user}
-				<ContactsView />	
+				<Navbar bg="dark" variant="dark">
+					<Navbar.Brand
+						className="justify-content-left"
+						style={navLinkStyle}
+						href="/"
+					>
+						<img className="icon" src="/coolbeans.png" />
+					</Navbar.Brand>
+					<Navbar.Collapse className="dark-navbar justify-content-end"></Navbar.Collapse>
+					<Button onClick={this.handleLogout} variant="outline-success" className="loginButton">Logout</Button>
+				</Navbar>
+				
+				<div className="container">
+					<div className="name">
+						Hello, {this.state.user}
+					</div>
+				</div>
+				
 			</div>
 		);
 	}
