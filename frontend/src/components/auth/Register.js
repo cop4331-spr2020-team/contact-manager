@@ -84,8 +84,10 @@ export default class Register extends Component {
 			this.setState({successfulRegister: true})	// Set to true so we can redirect to login page
 		})
 		.catch((error) => {
-			console.log("Boohoo!")
-			console.log(error.response.data)
+			if (!error.response) {
+				return;
+			}
+			//console.log(error.response.data)
 			// Loops through array of error messages to display in the form
 			for(var i = 0; i < error.response.data.errors.length; i++)
 			{	
