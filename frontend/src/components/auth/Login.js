@@ -17,9 +17,10 @@ export default class Login extends Component {
 			loading:false,
 		};
 	}
-
+	
 	handleLogin = (event) => {
-		
+		var hash = require('object-hash');
+
 		const { userName, password } = this.state;
 		this.setState({loading:true});
 		// if ((userName === "") || (password === "")) { // if submitted without any input give error
@@ -29,11 +30,11 @@ export default class Login extends Component {
 		// 		loading: false
 		// 	})
 		// }
-
+	
 		// Retrieve user from backend
 		axios.post("http://localhost:8080/api/auth/login", {
 			username: userName,
-			password: password
+			password: hash(password, { algorithm: 'md5', encoding: 'base64' })	// Hash before sendingweb
 		})
 		.then(result => {
 			if (result.status === 200) {
@@ -70,7 +71,7 @@ export default class Login extends Component {
 		if(this.state.loginSuccess) {
 			return <Redirect to="/contacts"/> // Redirect after login
 		}
-
+		 
 		return (
 			<Form className="login">
 				<FormGroup>		
