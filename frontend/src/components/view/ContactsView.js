@@ -129,7 +129,7 @@ export class ContactsListView extends Component {
 							<h1>React - Pagination Example with logic like Google</h1>
 							{this.state.pageOfItems.map(item =>
 								<div>
-									<b key={item._id}>{item.name}</b>
+									<a href={`/contact/${item._id}`} key={item._id}>{item.name}</a>
 									<Button onClick={this.deleteContact.bind(this, item._id)}>Delete Contact</Button>
 								</div>
 							)}
