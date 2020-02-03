@@ -1,11 +1,8 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-
-import { getContacts } from '../../actions/contactActions'
-
 import ContactCard from './ContactCard'
 import ContactPagination from './ContactPagination';
 
+import { getContacts } from '../../actions/contactActions'
 class ContactsView extends Component {
 
     state = {

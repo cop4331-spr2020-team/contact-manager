@@ -15,7 +15,7 @@ const { body, validationResult } = require('express-validator');
 authenticate = async (req, res, next) => {
 
 	if (!req.cookies.jwt) {
-		return res.status(401).send({ error: 'TokenMissing' })
+		return res.status(401).send({ logged_in: false })
 	}
 
 	var token = req.cookies.jwt
@@ -25,20 +25,22 @@ authenticate = async (req, res, next) => {
 		payload = jwt.decode(token, config.TOKEN_SECRET)
 	}
 	catch { 
-		return res.status(401).send({ error: 'TokenInvalid' })
+		return res.status(401).send({ logged_in: false })
 	}
 
 	if (payload.exp <= moment().unix()) {
-		return res.status(401).send({ error: 'TokenExpired' })
+		return res.status(401).send({ logged_in: false })
 	}
 
 	User.findById(payload.id, function(err, user) {
 		if (!user) {
-			return res.status(404).send({ error: 'UserNotFound' })
+			return res.status(404).send({ logged_in: false })
 		}
 		else {
-			req.user = payload.id
-			req.contacts = user.contacts
+			req.logged_in = true;
+			req.user = payload.id;
+			req.username = user.username;
+			req.contacts = user.contacts;
 			next()
 		}
 	})
@@ -76,10 +78,10 @@ login = async (req, res) => {
 					payload,
 					config.TOKEN_SECRET,
 					{
-						expiresIn: 31556926
+						expiresIn: '1d'
 					},
 					(err, token) => {
-						res.cookie('jwt', token).json({ success: true })
+						res.cookie('jwt', token, {httpOnly: true}).json({ success: true })
 					}
 				)
 			} 
@@ -128,6 +130,13 @@ register = async (req, res) => {
 	})
 }
 
+isLoggedIn = async (req, res) => {
+	res.status(200).json({
+		logged_in: req.logged_in,
+		user: req.username
+	});
+}
+
 validate = (method) => {
 	switch (method) {
 		case 'createUser': {
@@ -163,14 +172,7 @@ validate = (method) => {
 				}),
 				body('password')
 					.exists()
-					.withMessage('Password required.')
-					.bail()
-					.isLength({ min: 5 })
-					.withMessage('Password must be 5 characters minumum.')
-					.bail()
-					.matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$.!%*#?&])[A-Za-z\d@$.!%*#?&]{5,}$/, "i")
-					.withMessage('Password can only have alphanumeric, or @$.!%*#?&, symbols.\
-					 Must have at least one uppercase, one lowercase, and one symbol.'),
+					.withMessage('Password required.'),
 				body('passwordConfirmation')
 					.exists()
 					.withMessage('Password confirmation required.')
@@ -204,4 +206,5 @@ module.exports = {
 	login,
 	register,
 	authenticate,
+	isLoggedIn,
 }
