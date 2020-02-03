@@ -13,13 +13,10 @@ import './style.css'
 export class ContactsListView extends Component {
 
   constructor() {
-    super();
-
-     // an example array of 150 items to be paged
-     var exampleItems = [...Array(150).keys()].map(i => ({ id: (i+1), name: 'Item ' + (i+1) }));
-
+	 super();
+	 
      this.state = {
-         exampleItems: exampleItems,
+         exampleItems: [],
          pageOfItems: [],
          name: '',
      };
@@ -50,17 +47,17 @@ export class ContactsListView extends Component {
   }
 
   grabContacts() {
-    console.log('test')
-    axios.get('/api/contacts')
+    axios.get(`/api/contacts`, {
+		 params: {
+			 name: this.state.name
+		 }
+	 })
     .then(response => {
-      console.log(response)
-      if (response) {
         const data = response.data.data;
-        console.log(data)
+        console.log({ RESPONSE: data} )
         this.setState({
           exampleItems: data,
         })
-      }
     })
     .catch(error => {
       console.log(error)
@@ -88,7 +85,10 @@ export class ContactsListView extends Component {
   handleNameChange = event => {
     this.setState({
       name: event.target.value
-    })
+    }, () => {
+		 console.log(this.state.name)
+		 this.grabContacts()
+	 })
   }
 
   render() {
