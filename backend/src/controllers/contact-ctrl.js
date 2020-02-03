@@ -168,50 +168,37 @@ getContactsByUsername = async (req, res) => {
 		return res.status(400).json({ error: errors.array() })
 	}
 	const regex = new RegExp(req.body.name, 'i');
-	await Contact.find({ name: regex }, (err, contacts) => {
-		if (err) {
-			return res.status(400).json({
-				success: false,
-				error: err
-			})
-		}
+	await User.findById(req.user)
+			.then(user => {
 
-		if (!contacts) {
-			return res.status(404).json({
-				success: false,
-				error: 'No contact found.'
-			})
-		}
+				if (!user) {
+					return res.status(400).json({ error: "UserNotFound"})
+				}
 
-		return res.status(200).json({
-			success: true,
-			data: contacts
-		})
-	})
+				Contact.find({ name: regex, _id: { $in: user.contacts } }, (err, contacts) => {
+					if (err) {
+						return res.status(400).json({
+							success: false,
+							error: err
+						})
+					}
+			
+					if (!contacts) {
+						return res.status(404).json({
+							success: false,
+							error: 'No contact found.'
+						})
+					}
+			
+					return res.status(200).json({
+						success: true,
+						data: contacts
+					})
+				})
+			}) 
 	.catch(err => {
 		return res.status(400).json({ error: "UnknownError", err })
 	})
-}
-
-getContacts = async (req, res) => {
-
-	const errors = validationResult(req)
-
-	if (!errors.isEmpty()) {
-		return res.status(400).json({ error: errors.array() })
-	}
-
-	return User.findById(req.user)
-		.then(user => {
-			if (!user) {
-				return res.status(400).json({ error: "UserNotFound"})
-			}
-
-			return res.status(200).json({ contacts: user.contacts })
-		})
-		.catch(error => {
-			return res.status(400).json({ error: error })
-		})
 }
 
 validate = (method) => {
@@ -281,7 +268,6 @@ module.exports = {
 	createContact,
 	updateContact,
 	deleteContact,
-	getContacts,
 	getContactById,
 	getContactsByUsername,
 	validate,

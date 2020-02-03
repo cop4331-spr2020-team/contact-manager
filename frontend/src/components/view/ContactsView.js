@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
+import { getContacts } from '../../actions/contactActions'
+
 import ContactCard from './ContactCard'
 import ContactPagination from './ContactPagination';
 
@@ -14,27 +16,9 @@ class ContactsView extends Component {
       };
     
       componentDidMount() {
-        const allContacts = [
-          {name: "COOL"}, {name: "TEST"},
-          {name: "Marlon"}, {name: "Calvo"},
-          {name: "COOL"}, {name: "TEST"},
-          {name: "Marlon"}, {name: "Calvo"},
-          {name: "COOL"}, {name: "TEST"},
-          {name: "Marlon"}, {name: "Calvo"},
-          {name: "COOL"}, {name: "TEST"},
-          {name: "Marlon"}, {name: "Calvo"},
-          {name: "Marlon"}, {name: "Calvo"},
-          {name: "COOL"}, {name: "TEST"},
-          {name: "Marlon"}, {name: "Calvo"},
-          {name: "COOL"}, {name: "TEST"},
-          {name: "Marlon"}, {name: "Calvo"},
-          {name: "COOL"}, {name: "TEST"},
-          {name: "Marlon"}, {name: "Calvo"},
-          {name: "brandi"}, {name: "jonatan"},
-          {name: "Marlon"}, {name: "Calvo"},
-          {name: "fff"}, {name: "Calvo"},
-        ];
-        this.setState({ allContacts });
+        getContacts(allContacts => {
+          this.setState({ allContacts });
+        });
       }
     
       onPageChanged = data => {
@@ -89,7 +73,7 @@ class ContactsView extends Component {
                   />
                 </div>
               </div>
-              {currentContacts.map(contact => (
+              {currentContacts.filter(contact => contact !== null).map(contact => (
                 <ContactCard name={contact.name} />
               ))}
             </div>

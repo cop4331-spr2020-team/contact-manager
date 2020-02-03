@@ -34,15 +34,9 @@ router.get(
     contactController.validate('getContact'),
     contactController.getContactById
 )
-router.get(
-    '/contacts',
-    authenticate,
-    contactController.validate('getContacts'),
-    contactController.getContacts
-)
 
 router.get(
-    '/contactsByUsername',
+    '/contacts',
     authenticate,
     contactController.validate('getContactsByUsername'),
     contactController.getContactsByUsername
