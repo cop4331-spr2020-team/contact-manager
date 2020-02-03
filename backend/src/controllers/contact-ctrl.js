@@ -160,8 +160,8 @@ getContactsByUsername = async (req, res) => {
 	if (!errors.isEmpty()) {
 		return res.status(400).json({ error: errors.array() })
 	}
-
-	const regex = new RegExp(req.params.name, 'i');
+	
+	const regex = new RegExp(req.query.name, 'i');
 	await User.findById(req.user)
 	.then(user => {
 		
@@ -169,7 +169,6 @@ getContactsByUsername = async (req, res) => {
 			return res.status(400).json({ error: "UserNotFound"})
 		}
 		
-		console.log(`TEST: ${regex}`);
 		Contact.find({ name: regex, _id: { $in: user.contacts } }, (err, contacts) => {
 			if (err) {
 				return res.status(400).json({

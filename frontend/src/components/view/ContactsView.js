@@ -18,7 +18,8 @@ export class ContactsListView extends Component {
      this.state = {
          exampleItems: [],
          pageOfItems: [],
-         name: '',
+			name: '',
+			searchName: '',
      };
 
      // bind function in constructor instead of render (https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/jsx-no-bind.md)
@@ -49,7 +50,7 @@ export class ContactsListView extends Component {
   grabContacts() {
     axios.get(`/api/contacts`, {
 		 params: {
-			 name: this.state.name
+			 name: this.state.searchName
 		 }
 	 })
     .then(response => {
@@ -70,7 +71,7 @@ export class ContactsListView extends Component {
   }
 
   addContact = event => {
-    axios.put('/api/contact', { name: this.state.name, cell_phone_number: 'test' })
+    axios.post('/api/contact', { name: this.state.name, cell_phone_number: 'test' })
     .then(response => {
 		const data = response.data.data
       this.setState({
@@ -82,13 +83,18 @@ export class ContactsListView extends Component {
     })
   }
 
+  handleSearchChange = event => {
+	this.setState({
+	  searchName: event.target.value
+	}, () => {
+		this.grabContacts()
+	})
+ }
+
   handleNameChange = event => {
     this.setState({
       name: event.target.value
-    }, () => {
-		 console.log(this.state.name)
-		 this.grabContacts()
-	 })
+    });
   }
 
   render() {
@@ -96,6 +102,15 @@ export class ContactsListView extends Component {
         <div>
             <div className="container">
               <div>
+				  <FormGroup>
+                  <Input
+                    className="input"
+                    type="text"
+                    placeholder="Search Contact"
+                    value={this.state.searchName}
+                    onChange={this.handleSearchChange}
+                  />
+                </FormGroup>
                 <FormGroup>
                   <Input
                     name="firstName"
