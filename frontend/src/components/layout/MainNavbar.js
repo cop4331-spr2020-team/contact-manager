@@ -1,8 +1,22 @@
 import React, { Component } from 'react';
-import { Navbar, Nav } from 'react-bootstrap';
+import { Navbar, Button } from 'react-bootstrap';
+import axios from 'axios'
+
 import './Navbar.css';
 
 export default class MainNavbar extends Component {
+
+    logout = event => {
+        axios.post('/api/auth/logout')
+        .then(response => {
+            console.log(response.data)
+        })
+        .catch(error => {
+            console.log(error.response)
+        })
+        window.location.reload(false);
+    }
+
     render() {
 
         const navLinkStyle = {
@@ -12,14 +26,19 @@ export default class MainNavbar extends Component {
         }
 
         return (
-            <Navbar className="dark-navbar justify-content-left">
+            <Navbar variant="dark" bg="dark">
                 <Navbar.Brand
-                    className="justify-content-left"
                     style={navLinkStyle}
                     href="/"
                 >
                     <img className="icon" src="/coolbeans.png" />
                 </Navbar.Brand>
+
+                <Navbar.Collapse></Navbar.Collapse>
+
+                <Button onClick={this.logout} variant="outline-light">
+                    Log Out
+                </Button>
             </Navbar>
         )
     };
