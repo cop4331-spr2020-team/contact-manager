@@ -71,3 +71,13 @@
     margin-top: 35px;
     margin-bottom: 35px;
 }
+
+div.name {
+    margin: 0;
+    font-size: 55px;
+    position: absolute;
+    top: 15%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%) 
+}
