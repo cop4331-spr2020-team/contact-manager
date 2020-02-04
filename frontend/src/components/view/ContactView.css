@@ -8,13 +8,17 @@
     width: 400px;
 }
 
-.outer-wrap {
-    margin: 2%;
+.image-section {
+    background-color: #383838;
 }
+
+.list-section {
+    height: 100%;
+}
+
 
 .card {
     flex: 0 0 auto;
-    margin: 15px;
     overflow-y: auto;
 }
 

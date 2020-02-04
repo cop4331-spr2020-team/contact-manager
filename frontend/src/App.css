@@ -80,7 +80,9 @@ input[type=password] {
     outline:none;
 }
 
-
+.fullscreen, html, body, #app, #app>div {
+    height: 100%
+  }
 
 /* Delete Button */
 .remove-btn {

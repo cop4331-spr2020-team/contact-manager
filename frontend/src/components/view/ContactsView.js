@@ -9,10 +9,29 @@ import './style.css'
 import './ContactView.css'
 
 function updateId(id) {
-	console.log(id)
-	this.setState({id}, () => {
+	this.setState({id: id, isEdit: false}, () => {
 		this.grabUserData()
 	})
+}
+
+function sortedIndex(items, contact) {
+    var low = 0,
+        high = items.length;
+
+    while (low < high) {
+        var mid = (low + high) >>> 1;
+        if (items[mid].name < contact.name) low = mid + 1;
+        else high = mid;
+	}
+	
+    return low;
+}
+
+function add(items, contact, index) {
+	var tarray = [...items]
+	tarray.splice(index,0,contact)
+	console.log(tarray)
+	return tarray;
 }
 
 export default class ContactsView extends Component {
@@ -33,6 +52,15 @@ export default class ContactsView extends Component {
      // bind function in constructor instead of render (https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/jsx-no-bind.md)
 	  this.onChangePage = this.onChangePage.bind(this);
 	  this.handleCardSelect = this.handleCardSelect.bind(this);
+	  this.deleteContact = this.deleteContact
+  }
+
+  deleteContact = (id) => {
+	  console.log('i was called')
+	  console.log(id)
+	  this.setState({
+		  items: this.state.items.filter(contact => contact._id !== id)
+	  })
   }
 
 	componentDidMount() {
@@ -87,19 +115,26 @@ export default class ContactsView extends Component {
     this.setState({ pageOfItems: pageOfItems });
   }
 
-  addContact = event => {
-    axios.post('/api/contact', { name: this.state.name, cell_phone_number: 'test' })
-    .then(response => {
-		 console.log(response.data)
-		const data = response.data.data
-      this.setState({
-			items: [...this.state.items, { name: data.name, _id: data._id } ],
-      })
-    })
-    .catch(error => {
-      console.log(error.response.data)
-    })
-  }
+	editContact = (contact) => {
+		const nitems = this.state.items.map(tcontact => {
+			console.log(contact)
+			if (tcontact._id === contact._id) {
+				return contact;
+			}
+
+			return tcontact;
+		})
+		this.setState({
+			items: nitems
+		})
+	}
+
+	addContact = (contact) => {
+		const index = sortedIndex(this.state.items, contact)
+		this.setState({
+			items: add(this.state.items, contact, index)
+		})
+	}
 
   handleScrollUpdate = event => {
 	  this.setState({
@@ -137,76 +172,56 @@ export default class ContactsView extends Component {
 	}
 
     return (
-        <div>
-            <div className="outer-wrap">
-					<div className="row">
-						<div className="col-4">
-							<FormGroup>
-								<Input
-								name="firstName"
-								className="input"
-								type="text"
-								placeholder="First Name"
-								value={this.state.name}
-								onChange={this.handleNameChange}
-								/>
-							</FormGroup>
+		<div className="row" style={{ marginLeft: "0px", marginRight: "0px"}}>
+			<div className="col-4 list-section">
+					<h1>Contacts</h1>
+					<FormGroup>
+						<Input
+						className="input"
+						type="text"
+						placeholder="Search Contact"
+						value={this.state.searchName}
+						onChange={this.handleSearchChange}
+						/>
+					</FormGroup>
+				<div id="scrollableDiv" className="contact-list smooth-scroll" style={{ height: "80vh", overflow: "auto"}}>
 
-							<Button onClick={this.addContact}>Add user</Button>
-							<div className="contact-list">
-								<h1>Contacts</h1>
+					<InfiniteScroll
+						dataLength={this.state.items.length}
+						next={this.grabContacts}
+						hasMore={this.state.hasMore}
+						scrollableTarget="scrollableDiv"
+						endMessage={
+							<p style={{ textAlign: "center" }}>
+							<b>End of Contacts</b>
+							</p>
+						}
+						>
 
-								<FormGroup>
-									<Input
-									className="input"
-									type="text"
-									placeholder="Search Contact"
-									value={this.state.searchName}
-									onChange={this.handleSearchChange}
-									/>
-								</FormGroup>
-								<InfiniteScroll
-									dataLength={this.state.items.length}
-									next={this.grabContacts}
-									hasMore={this.state.hasMore}
-									height={600}
-									endMessage={
-										<p style={{ textAlign: "center" }}>
-										<b>Yay! You have seen it all</b>
-										</p>
-									}
-									>
-
-									{this.state.items.map(item =>
-										<div 
-											key={item._id} 
-											className="card flex-row flex-wrap flex-shrink-3"
-											onClick={this.handleCardSelect.bind(this, item._id)}
-										
-										>
-											<div className="">
-											<img className="card-image contact-icon rounded-circle" src="/default.png" />
-											</div>
-											<div className="card-block px-2">
-												<h4 className="card-title card-text">{item.name}</h4>
-												<p className="card-text">16419 SW 50th Ter, Miami, FL, 33185</p>
-												<p className="card-text">305-490-2892</p>
-											</div>
-											<div className="card-block px-2">
-												<a href={`/contact/${item._id}`} className="btn btn-primary">Open</a>
-											</div>
-										</div>
-									)}
-
-								</InfiniteScroll>
+						{this.state.items.map(item =>
+							<div 
+								key={item._id} 
+								className="card flex-row flex-wrap flex-shrink-3"
+								onClick={this.handleCardSelect.bind(this, item._id)}
+							
+							>
+								<div className="">
+								<img className="card-image contact-icon rounded-circle" src="/default.png" />
+								</div>
+								<div className="card-block px-2">
+									<h4 className="card-title card-text">{item.name}</h4>
+									<p className="card-text">{item.cell_phone_number}</p>
+									<p className="card-text">{item.address}</p>
+								</div>
 							</div>
-						</div>
-						<div className="contact-container col-8">
-							<ContactView updateId={this.updateId}/>
-						</div>
-					</div>
-            </div>
-			<hr />
+						)}
+
+					</InfiniteScroll>
+				</div>
+			</div>
+			<div className="col-7">
+				<ContactView addContact={this.addContact} editContact={this.editContact} deleteContact={this.deleteContact} updateId={this.updateId}/>
+			</div>
 		</div>
     );
 	}
@@ -218,10 +233,17 @@ export class ContactView extends Component {
 		 super(props);
 
 		 this.state = {
-			  id: null,
-			  name: '',
-			  newName: '',
-			  isDeleted: false,
+			name: '',
+			cell_phone_number: '',
+			home_address: '',
+			birthday: '',
+			note: '',
+			email: '',
+			company: '',
+			isEdit: false,
+
+			id: null,
+			isDeleted: false,
 		 };
 
 		 updateId = updateId.bind(this);
@@ -241,26 +263,101 @@ export class ContactView extends Component {
 	}
 
 	editUserData = event => {
-		 axios.put(`/api/contact/${this.state.id}`, {
-			  name: this.state.newName
-		 })
-		 .then(response => {
-			  console.log(response.data)
-			  if (response.data.success) {
-					this.setState({
-						 name: this.state.newName
-					})
-			  }
-		 })
-		 .catch(error => {
-			  console.log(error.response)
-		 })
+
+		console.log('test2')
+
+		const data = {
+			name: this.state.name,
+				cell_phone_number: this.state.cell_phone_number,
+				home_address: this.state.home_address,
+				birthday: this.state.birthday,
+				note: this.state.note,
+				email: this.state.email,
+				company: this.state.company,
+				_id: this.state.id,
+		}
+
+		// Creating new contact
+		if (!this.state.id) {
+			axios.post('/api/contact', data)
+			.then(response => {
+
+				console.log('test')
+				const data = response.data.data
+				
+				this.setState({
+					id: data._id,
+					isEdit: true,
+					isDeleted: false,
+				})
+
+				this.props.addContact(data)
+
+			})
+			.catch(error => {
+				console.log(error)
+			})
+
+		// Editing contact
+		} else {
+			axios.put(`/api/contact/${this.state.id}`, data)
+			.then(response => {
+
+				this.props.editContact(data)
+
+			})
+			.catch(error => {
+				console.log(error)
+			})
+		}
 	}
 
 	handleNameChange = event => {
+		this.setState({
+			 name: event.target.value
+		})
+	}
+
+	handleEmailChange = event => {
 		 this.setState({
-			  newName: event.target.value
+			  email: event.target.value
 		 })
+	}
+
+	handleNumberChange = event => {
+		this.setState({
+			 cell_phone_number: event.target.value
+		})
+	}
+
+	handleNoteChange = event => {
+		this.setState({
+			note: event.target.value
+		})
+	}
+
+	handleCompanyChange = event => {
+		this.setState({
+			company: event.target.value
+		})
+	}
+
+	handleBirthdayChange = event => {
+		this.setState({
+			birthday: event.target.value
+		})
+	}
+
+	handleAddressChange = event => {
+		this.setState({
+			home_address: event.target.value
+		})
+	}
+
+	onEditClick = event => {
+		this.setState({
+			isEdit: true
+		})
 	}
 
 	componentDidMount() {
@@ -274,10 +371,13 @@ export class ContactView extends Component {
 		  if (response.data.success) {
 			  console.log('delete success.')
 			  this.setState({
-				  isDeleted: true
+				  isDeleted: true,
 			  });
 		  }
 	  })
+	  .then(response => {
+			this.props.deleteContact(this.state.id)
+		})
 	  .catch(error => {
 		  console.log(error.response)
 	  })
@@ -285,16 +385,82 @@ export class ContactView extends Component {
 
 	render() {
 
-		 const { isDeleted } = this.state;
+		 const { isEdit, isDeleted } = this.state;
+
+		if (isEdit) {
+
+			return (
+				<div className="">
+
+					<div className="row">
+						<div className="col">
+							<h1>Create Contact</h1>
+
+
+							<div className="row">
+								<div className="col text-center image-section">
+									<img className="card-image contact-icon2, rounded-circle" src="/default.png" />
+								</div>
+							</div>
+
+							<Card.Body className="text-center">
+								<Input
+									onChange={this.handleNameChange}
+									value={this.state.name}
+								/>
+
+								<Input
+									onChange={this.handleNumberChange}
+									value={this.state.cell_phone_number}
+								/>
+
+								<Input
+									onChange={this.handleAddressChange}
+									value={this.state.home_address}
+								/>
+
+								<Input
+									onChange={this.handleBirthdayChange}
+									value={this.state.birthday}
+								/>
+
+								<Input
+									onChange={this.handleNoteChange}
+									value={this.state.note}
+								/>
+
+								<Input
+									onChange={this.handleEmailChange}
+									value={this.state.email}
+								/>
+
+								<Input
+									onChange={this.handleCompanyChange}
+									value={this.state.company}
+								/>
+							</Card.Body>
+
+							<Button
+								onClick={this.editUserData}
+							>
+								Save
+							</Button>
+
+						</div>
+					</div>
+				</div>
+			)
+
+		}
 
 		 return (
-			  <div className="container">
+			  <div className="">
 				  <div className="row">
 
 					  <div className="col">
 
 						  <div className="row">
-							  <div className="col text-center">
+							  <div className="col text-center image-section">
 									<img className="card-image contact-icon2 rounded-circle" src="/default.png" />
 							  </div>
 						  </div>
@@ -302,21 +468,18 @@ export class ContactView extends Component {
 							<Card.Body className="text-center">
 								<Card.Title>{this.state.name}</Card.Title>
 								<Card.Text>{this.state.cell_phone_number}</Card.Text>
-								<Button variant="primary">Go somewhere</Button>
 							</Card.Body>
-
-							{this.state.id}
-								<Input
-									value={this.state.newName}
-									onChange={this.handleNameChange}
-									placeholder="New Name"
-								>
-								</Input>
-								<Button onClick={this.editUserData}>Update Contact</Button>
-								<Button onClick={this.deleteContact.bind(this, this.state.id)}>Delete Contact</Button>
-								<b>
-									{this.state.name}
-								</b>
+							<Input
+								value={this.state.newName}
+								onChange={this.handleNameChange}
+								placeholder="New Name"
+							>
+							</Input>
+							<Button onClick={this.onEditClick}>Edit Contact</Button>
+							<Button onClick={this.deleteContact.bind(this, this.state.id)}>Delete Contact</Button>
+							<b>
+								{this.state.name}
+							</b>
 
 					  </div>
 				  </div>

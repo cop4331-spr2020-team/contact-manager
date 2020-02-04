@@ -49,7 +49,6 @@ export default class Register extends Component {
 		// handle name change.
 		this.handleChange(event)
 		this.setState({isEmailValid: false})
-					
 	}
 
 	handleUsernameChangeEvent = (event) => {
