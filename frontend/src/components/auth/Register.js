@@ -96,7 +96,7 @@ export default class Register extends Component {
 		}
 		
 		
-		axios.put('http://localhost:8080/api/auth/register', {
+		axios.put('/api/auth/register', {
 			name: firstName + ' ' + lastName,
 			email: email,
 			username: userName,
@@ -108,6 +108,7 @@ export default class Register extends Component {
 			this.setState({successfulRegister: true})	// Set to true so we can redirect to login page
 		})
 		.catch((error) => {
+
 			
 			if (!error.response) {
 				return;

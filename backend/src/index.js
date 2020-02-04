@@ -4,10 +4,11 @@ const cors             = require('cors')
 const logger           = require('morgan')
 const config           = require('./config/config')
 const cookiesParser    = require('cookie-parser')
+const blacklist = require('express-jwt-blacklist');
 
 // Initialize express.
 const app = express()
-app.use(cors());
+app.use(cors())
 app.use(cookiesParser())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))

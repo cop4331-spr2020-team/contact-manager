@@ -27,7 +27,7 @@ spec:
           initialDelaySeconds: 2
           periodSeconds: 5
           httpGet:
-            path: /api/health
+            path: /api/version
             port: 8080
         #readinessProbe:
         #  httpGet:
