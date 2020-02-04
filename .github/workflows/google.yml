@@ -58,10 +58,24 @@ jobs:
           --build-arg GITHUB_SHA="$GITHUB_SHA" \
           --build-arg GITHUB_REF="$GITHUB_REF" .
 
+    # Build the Frontend Docker image
+    - name: Build Frontend
+      working-directory: ./frontend
+      run: |
+        mv Dockerfile-prod Dockerfile
+        docker build -t "$REGISTRY_HOSTNAME"/"$GKE_PROJECT"/"$FRONTEND_IMAGE":"$GITHUB_SHA" \
+          --build-arg GITHUB_SHA="$GITHUB_SHA" \
+          --build-arg GITHUB_REF="$GITHUB_REF" .
+
     # Push the Docker image to Google Container Registry
     - name: Publish Backend
       run: |
         docker push $REGISTRY_HOSTNAME/$GKE_PROJECT/$BACKEND_IMAGE:$GITHUB_SHA
+
+    # Push the Docker image to Google Container Registry
+    - name: Publish Frontend
+      run: |
+        docker push $REGISTRY_HOSTNAME/$GKE_PROJECT/$FRONTEND_IMAGE:$GITHUB_SHA
         
     # Set up kustomize
     - name: Set up Kustomize
@@ -78,4 +92,15 @@ jobs:
         ../kustomize edit set image gcr.io/GKE_PROJECT/IMAGE:TAG=gcr.io/$GKE_PROJECT/$BACKEND_IMAGE:$GITHUB_SHA
         ../kustomize build . | kubectl apply -f -
         kubectl rollout status deployment/$DEPLOYMENT_NAME-backend 
+        kubectl get services -o wide
+
+    # Deploy the Docker image to the GKE cluster
+    - name: Deploy Frontend
+      working-directory: ./frontend
+      run: |
+        ls
+        gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GKE_PROJECT
+        ../kustomize edit set image gcr.io/GKE_PROJECT/IMAGE:TAG=gcr.io/$GKE_PROJECT/$FRONTEND_IMAGE:$GITHUB_SHA
+        ../kustomize build . | kubectl apply -f -
+        kubectl rollout status deployment/$DEPLOYMENT_NAME-frontend 
         kubectl get services -o wide

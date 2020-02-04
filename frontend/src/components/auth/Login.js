@@ -32,7 +32,7 @@ export default class Login extends Component {
 		// }
 	
 		// Retrieve user from backend
-		axios.post("http://localhost:8080/api/auth/login", {
+		axios.post("/api/auth/login", {
 			username: userName,
 			password: hash(password, { algorithm: 'md5', encoding: 'base64' })	// Hash before sendingweb
 		})
@@ -69,7 +69,7 @@ export default class Login extends Component {
 		const { isUsernameInvalid, isPasswordInvalid } = this.state;
 
 		if(this.state.loginSuccess) {
-			return <Redirect to="/contacts"/> // Redirect after login
+			return <Redirect to="/"/> // Redirect after login
 		}
 		 
 		return (
@@ -77,7 +77,7 @@ export default class Login extends Component {
 				<FormGroup>		
 					<Label>Username</Label>
 					<Input
-						className="input"
+						className="text"
 						type="text"
 						value={this.state.userName}
 						onChange={this.handleUsernameChange}
@@ -87,7 +87,7 @@ export default class Login extends Component {
 				<FormGroup>
 					<Label>Password</Label>
 					<Input
-						className="input"
+						className="text"
 						type="password"
 						value={this.state.password}
 						onChange={this.handlePasswordChange}
