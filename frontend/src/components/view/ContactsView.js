@@ -33,6 +33,18 @@ function sortedIndex(items, contact) {
     return low;
 }
 
+function ResetOrCancel(props) {
+  if (props.id === null) {
+    return <div className="col">
+        <Button variant="danger" onClick={props.resetForms} className="col-6 btn btn-secondary">Reset</Button>
+      </div>
+  }
+  
+  return <div className="col">
+  <Button variant="danger" onClick={props.grabUserData} className="col-6 btn btn-secondary">Reset</Button>
+    </div>
+}
+
 function add(items, contact, index) {
 	var tarray = [...items]
 	tarray.splice(index,0,contact)
@@ -459,7 +471,19 @@ export class ContactView extends Component {
 		this.setState({
 			isEdit: true
 		})
-	}
+  }
+  
+  getResetOrCancel = () => {
+    if (this.state.id === null) {
+      return <div className="col">
+          <Button variant="danger" onClick={this.resetForms} className="col-6 btn btn-secondary">Reset</Button>
+        </div>
+    }
+    
+    return <div className="col">
+    <Button variant="danger" onClick={this.grabUserData} className="col-6 btn btn-secondary">Reset</Button>
+      </div>
+  }
 
 	deleteContact(id) {
 	  axios.delete(`/api/contact/${id}`)
@@ -648,7 +672,7 @@ export class ContactView extends Component {
                 <div className="form-group">
                   <div className="container">
                     <div className="row">
-                      <div className="col"><Button variant="danger" onClick={this.resetForms} className="col-6 btn btn-secondary">Reset</Button></div>
+                      <div className="col"><div className="col"><ResetOrCancel grabUserData={this.grabUserData.bind(this)} resetForms={this.resetForms.bind(this)} id={this.state.id} /></div></div>
                       <SubmitButton onChange={this.editUserData} id={this.state.id} />
                     </div>
                   </div>
@@ -747,7 +771,7 @@ export class ContactView extends Component {
               <div className="container">
                 <div className="row">
                   <div className="col"><Button variant="danger" onClick={this.deleteContact.bind(this, this.state.id)} className="col-6 btn btn-secondary">Delete</Button></div>
-                  <div onClick={this.onEditClick} className="col"><Button className="col-6 btn btn-primary">Edit</Button></div>
+                  <div className="col"><Button onClick={this.onEditClick} className="col-6 btn btn-primary">Edit</Button></div>
                 </div>
               </div>
             </div>
