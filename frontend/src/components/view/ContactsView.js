@@ -33,12 +33,6 @@ function sortedIndex(items, contact) {
     return low;
 }
 
-function sleeper(ms) {
-  return function(x) {
-    return new Promise(resolve => setTimeout(() => resolve(x), ms));
-  };
-}
-
 function add(items, contact, index) {
 	var tarray = [...items]
 	tarray.splice(index,0,contact)
@@ -96,10 +90,6 @@ export default class ContactsView extends Component {
 	  })
   }
 
-	componentDidMount() {
-		this.grabContacts(0);
-	}
-
 	updateId = id => {
 		this.setState({
 			 id: id
@@ -109,7 +99,8 @@ export default class ContactsView extends Component {
 	grabContacts = () => {
 		const { offset } = this.state;
 		const limit = 40;
-		
+    
+    console.log('grabbing contacts')
 		axios.get(`/api/contacts`, {
 			params: {
 				name: this.state.searchName,
@@ -137,6 +128,7 @@ export default class ContactsView extends Component {
 			}
 		})
 		.catch(error => {
+      console.log(error.response)
 		})
 	}
 
@@ -159,6 +151,7 @@ export default class ContactsView extends Component {
 	}
 
 	addContact = (contact) => {
+    console.log('inserting into list')
 		const index = sortedIndex(this.state.items, contact)
 		this.setState({
 			items: add(this.state.items, contact, index)
@@ -207,7 +200,8 @@ export default class ContactsView extends Component {
 					isLoading: false,
 					user: response.data.user,
 					name: response.data.name
-				});
+        });
+        this.grabContacts(0);
 			} else if (!response.data.logged_in && this.state.isAuthenticated === true) {
 				this.setState({
 					isAuthenticated: false,
@@ -225,7 +219,7 @@ export default class ContactsView extends Component {
 	}
 
 	componentDidMount() {
-		this.checkLoginStatus();
+    this.checkLoginStatus();
 	}
 
   render() {
@@ -280,17 +274,17 @@ export default class ContactsView extends Component {
                     onClick={this.handleCardSelect.bind(this, item._id)}
                   
                   >
-                    <div class="card" style={{background: "transparent"}}>
-                      <div class="row no-gutters">
-                        <div class="col-2" style={{background: "gray"}}>
+                    <div className="card" style={{background: "transparent"}}>
+                      <div className="row no-gutters">
+                        <div className="col-2" style={{background: "gray"}}>
                           <img className="card-image contact-icon rounded-circle" src="/default.png" />
                         </div>
-                        <div class="col-8">
-                          <div class="flex-row text-left">
-                            <div class="col">
+                        <div className="col-8">
+                          <div className="flex-row text-left">
+                            <div className="col">
                               <b className="card-text">{item.name + " " + item.last}</b>
                             </div>
-                            <div class="col">
+                            <div className="col">
                               <label size="sm" className="card-text text-muted">{item.company}</label>
                             </div>
                           </div>
@@ -337,6 +331,7 @@ export class ContactView extends Component {
 	}
 
 	grabUserData() {
+    console.log('grabbing user data')
 		 axios.get(`/api/contact/${this.state.id}`)
 		 .then(response => {
 			  const data = response.data.data;
@@ -352,6 +347,7 @@ export class ContactView extends Component {
 			  })
 		 })
 		 .catch(error => {
+       console.log(error.response)
 		 })
 	}
 
@@ -369,12 +365,15 @@ export class ContactView extends Component {
         last: this.state.last,
 		}
 
-		// Creating new contact
+    // Creating new contact
 		if (!this.state.id) {
+      console.log('creating new contact')
 			axios.post('/api/contact', data)
 			.then(response => {
 
 				const data = response.data.data
+        console.log('got data back')
+        console.log(data)
 
 				this.setState({
 					id: data._id,
@@ -382,9 +381,12 @@ export class ContactView extends Component {
 				})
 
 				this.props.addContact(data)
+        console.log('sent request to contacts list')
 
 			})
 			.catch(error => {
+        console.log('error creating contact')
+        console.log(error.response)
 			})
 
 		// Editing contact
@@ -733,7 +735,7 @@ export class ContactView extends Component {
               </div>
               <div className="col">
                 <textarea
-                  readonly
+                  readOnly
                   type="text" 
                   className="form-control" 
                   value={this.state.note}
