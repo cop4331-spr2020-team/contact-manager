@@ -1,0 +1,20 @@
+.contact-image {
+    width: 40%;    
+}
+
+.card {
+    flex: 0 0 auto;
+    margin-top: 10px;
+    overflow-y: auto;
+}
+
+.contact-list {
+    width: 90vh;
+}
+
+.contact-info {
+    margin-top: 1%;
+}
+.card-block {
+    text-align: left;
+}

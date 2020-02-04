@@ -3,8 +3,8 @@ import { Button, Navbar, Card } from "react-bootstrap";
 import { Form, FormGroup, Row, Col, Label, Input, FormFeedback } from 'reactstrap';
 
 import axios from "axios";
-
 import './style.css'
+import './ContactView.css'
 export default class ContactsView extends Component {
 
   constructor() {
@@ -19,27 +19,10 @@ export default class ContactsView extends Component {
 
      // bind function in constructor instead of render (https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/jsx-no-bind.md)
 	  this.onChangePage = this.onChangePage.bind(this);
-	  this.deleteContact = this.deleteContact.bind(this);
   }
 
   componentDidMount() {
     this.grabContacts();
-  }
-
-  deleteContact(id) {
-		axios.delete(`/api/contact/${id}`)
-		.then(response => {
-			console.log('delete attempt.')
-			if (response.data.success) {
-				console.log('delete success.')
-				this.setState(prevState => ({
-					exampleItems: prevState.exampleItems.filter(contact => contact._id != id)
-				}));
-			}
-		})
-		.catch(error => {
-			console.log(error.response)
-		})
   }
 
   grabContacts() {
@@ -120,13 +103,23 @@ export default class ContactsView extends Component {
                 <Button onClick={this.addContact}>Add user</Button>
 
 					</div>
-						<div className="text-center">
-							<h1>React - Pagination Example with logic like Google</h1>
+						<div className="container contact-list">
+							<h1>Contacts</h1>
 							{this.state.pageOfItems.map(item =>
-								<div>
-									<a href={`/contact/${item._id}`} key={item._id}>{item.name}</a>
-									<Button onClick={this.deleteContact.bind(this, item._id)}>Delete Contact</Button>
-								</div>
+								<div key={item._id} class="card flex-row flex-wrap flex-shrink-3">
+									<div class="card-header">
+										<img className="contact-image" src="/default.png" alt="" />
+									</div>
+									<div class="card-block px-2">
+										<h4 class="card-title card-text">{item.name}</h4>
+										<p class="card-text">16419 SW 50th Ter, Miami, FL, 33185</p>
+										<p class="card-text">305-490-2892</p>
+									</div>
+									<div className="card-block px-2">
+										<a href={`/contact/${item._id}`} class="btn btn-primary">Open</a>
+									</div>
+						  		</div>
+								
 							)}
 							<Pagination items={this.state.exampleItems} onChangePage={this.onChangePage} />
 						</div>
