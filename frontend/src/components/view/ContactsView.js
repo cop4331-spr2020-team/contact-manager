@@ -30,8 +30,16 @@ function sortedIndex(items, contact) {
 function add(items, contact, index) {
 	var tarray = [...items]
 	tarray.splice(index,0,contact)
-	console.log(tarray)
 	return tarray;
+}
+
+function Title(props) {
+	const isNew = props.id === null;
+	if (isNew) {
+		return <h1>New Contact</h1>
+	} else {
+		return <h1>Edit Contact</h1>
+	}
 }
 
 export default class ContactsView extends Component {
@@ -201,7 +209,7 @@ export default class ContactsView extends Component {
 						{this.state.items.map(item =>
 							<div 
 								key={item._id} 
-								className="card flex-row flex-wrap flex-shrink-3"
+								className="contact-card card flex-row flex-wrap flex-shrink-3"
 								onClick={this.handleCardSelect.bind(this, item._id)}
 							
 							>
@@ -211,7 +219,7 @@ export default class ContactsView extends Component {
 								<div className="card-block px-2">
 									<h4 className="card-title card-text">{item.name}</h4>
 									<p className="card-text">{item.cell_phone_number}</p>
-									<p className="card-text">{item.address}</p>
+									<p className="card-text">{item.company}</p>
 								</div>
 							</div>
 						)}
@@ -219,7 +227,7 @@ export default class ContactsView extends Component {
 					</InfiniteScroll>
 				</div>
 			</div>
-			<div className="col-7">
+			<div className="col-8">
 				<ContactView addContact={this.addContact} editContact={this.editContact} deleteContact={this.deleteContact} updateId={this.updateId}/>
 			</div>
 		</div>
@@ -240,10 +248,9 @@ export class ContactView extends Component {
 			note: '',
 			email: '',
 			company: '',
-			isEdit: false,
+			isEdit: true,
 
 			id: null,
-			isDeleted: false,
 		 };
 
 		 updateId = updateId.bind(this);
@@ -254,7 +261,13 @@ export class ContactView extends Component {
 		 .then(response => {
 			  const data = response.data.data;
 			  this.setState({
-					name: data.name
+					name: data.name,
+					cell_phone_number: data.cell_phone_number,
+					home_address: data.home_address,
+					birthday: data.birthday,
+					note: data.note,
+					email: data.email,
+					company: data.company,
 			  })
 		 })
 		 .catch(error => {
@@ -264,8 +277,6 @@ export class ContactView extends Component {
 
 	editUserData = event => {
 
-		console.log('test2')
-
 		const data = {
 			name: this.state.name,
 				cell_phone_number: this.state.cell_phone_number,
@@ -274,7 +285,6 @@ export class ContactView extends Component {
 				note: this.state.note,
 				email: this.state.email,
 				company: this.state.company,
-				_id: this.state.id,
 		}
 
 		// Creating new contact
@@ -284,11 +294,11 @@ export class ContactView extends Component {
 
 				console.log('test')
 				const data = response.data.data
-				
+				console.log(data)
+
 				this.setState({
 					id: data._id,
-					isEdit: true,
-					isDeleted: false,
+					isEdit: false,
 				})
 
 				this.props.addContact(data)
@@ -303,7 +313,12 @@ export class ContactView extends Component {
 			axios.put(`/api/contact/${this.state.id}`, data)
 			.then(response => {
 
+				data._id = this.state.id
+
 				this.props.editContact(data)
+				this.setState({
+					isEdit: false,
+				})
 
 			})
 			.catch(error => {
@@ -367,123 +382,170 @@ export class ContactView extends Component {
 	deleteContact(id) {
 	  axios.delete(`/api/contact/${id}`)
 	  .then(response => {
-		  console.log('delete attempt.')
 		  if (response.data.success) {
-			  console.log('delete success.')
+			  const id = this.state.id;
 			  this.setState({
-				  isDeleted: true,
+				name: '',
+				cell_phone_number: '',
+				home_address: '',
+				birthday: '',
+				note: '',
+				email: '',
+				company: '',
+				isEdit: true,
+				id: null,
+				
+			  }, () => {
+				  this.props.deleteContact(id)
 			  });
 		  }
 	  })
-	  .then(response => {
-			this.props.deleteContact(this.state.id)
-		})
 	  .catch(error => {
 		  console.log(error.response)
 	  })
+	}
+
+	resetForms = event => {
+		this.setState({
+			name: '',
+			cell_phone_number: '',
+			home_address: '',
+			birthday: '',
+			note: '',
+			email: '',
+			company: '',
+		})
 	}
 
 	render() {
 
 		 const { isEdit, isDeleted } = this.state;
 
-		if (isEdit) {
+		if (isEdit || isDeleted) {
 
 			return (
-				<div className="">
-
-					<div className="row">
-						<div className="col">
-							<h1>Create Contact</h1>
+				<div className="row contact-container fullscreen">
+					<div className="col text-center">
+						<Title id={this.state.id}/>
 
 
-							<div className="row">
-								<div className="col text-center image-section">
-									<img className="card-image contact-icon2, rounded-circle" src="/default.png" />
-								</div>
+						<div className="row">
+							<div className="col text-center image-section">
+								<img className="card-image contact-icon2, rounded-circle" src="/default.png" />
 							</div>
+						</div>
 
-							<Card.Body className="text-center">
-								<Input
-									onChange={this.handleNameChange}
-									value={this.state.name}
-								/>
+						<div className="container-fluid h-10 bg-light text-dark">
+						<div className="row justify-content-center align-items-center">
+							<div>&nbsp;</div>  
+						</div>
+						<hr/>
+						<div className="row justify-content-center align-items-center h-10">
+							<div className="col col-sm-6 col-md-6 col-lg-4 col-xl-3">
+								<form action="">
+									<div className="form-group">
+										<Input
+											type="text"
+											className="form-control"
+											placeholder="Full Name"
+											onChange={this.handleNameChange}
+											value={this.state.name}
+										/>
 
-								<Input
-									onChange={this.handleNumberChange}
-									value={this.state.cell_phone_number}
-								/>
+										<Input
+											type="text"
+											className="form-control"
+											placeholder="Phone Number"
+											onChange={this.handleNumberChange}
+											value={this.state.cell_phone_number}
+										/>
 
-								<Input
-									onChange={this.handleAddressChange}
-									value={this.state.home_address}
-								/>
+										<Input
+											type="text"
+											className="form-control"
+											placeholder="Email Address"
+											onChange={this.handleEmailChange}
+											value={this.state.email}
+										/>
 
-								<Input
-									onChange={this.handleBirthdayChange}
-									value={this.state.birthday}
-								/>
+										<Input
+											type="text"
+											className="form-control"
+											placeholder="Company"
+											onChange={this.handleCompanyChange}
+											value={this.state.company}
+										/>
 
-								<Input
-									onChange={this.handleNoteChange}
-									value={this.state.note}
-								/>
+										<Input
+											type="text"
+											className="form-control"
+											placeholder="Home Address"
+											onChange={this.handleAddressChange}
+											value={this.state.home_address}
+										/>
 
-								<Input
-									onChange={this.handleEmailChange}
-									value={this.state.email}
-								/>
+										<Input
+											type="text"
+											className="form-control"
+											placeholder="Birthday"
+											onChange={this.handleBirthdayChange}
+											value={this.state.birthday}
+										/>
+								
+										<textarea
+											type="text"
+											className="form-control"
+											placeholder="Note"
+											onChange={this.handleNoteChange}
+											value={this.state.note}
+										/>
 
-								<Input
-									onChange={this.handleCompanyChange}
-									value={this.state.company}
-								/>
-							</Card.Body>
 
-							<Button
-								onClick={this.editUserData}
-							>
-								Save
-							</Button>
-
+										
+									</div>
+									<div className="form-group">
+										<div className="container">
+											<div className="row">
+											<div onClick={this.resetForms} className="col"><Button variant="danger" className="">Reset</Button></div>
+											<div onClick={this.editUserData} className="col"><Button className="">Submit</Button></div>
+											</div>
+										</div>
+									</div>
+								</form>
+							</div>
 						</div>
 					</div>
 				</div>
+			</div>
 			)
 
 		}
 
 		 return (
-			  <div className="">
-				  <div className="row">
+			<div className="row" style={{ background: "gray"}}>
 
-					  <div className="col">
+				<div className="col text-center">
+				<h1>View Contact</h1>
 
-						  <div className="row">
-							  <div className="col text-center image-section">
-									<img className="card-image contact-icon2 rounded-circle" src="/default.png" />
-							  </div>
-						  </div>
+				<div className="row">
+					<div className="col text-center image-section">
+						<img className="card-image contact-icon2 rounded-circle" src="/default.png" />
+					</div>
+				</div>
 
-							<Card.Body className="text-center">
-								<Card.Title>{this.state.name}</Card.Title>
-								<Card.Text>{this.state.cell_phone_number}</Card.Text>
-							</Card.Body>
-							<Input
-								value={this.state.newName}
-								onChange={this.handleNameChange}
-								placeholder="New Name"
-							>
-							</Input>
-							<Button onClick={this.onEditClick}>Edit Contact</Button>
-							<Button onClick={this.deleteContact.bind(this, this.state.id)}>Delete Contact</Button>
-							<b>
-								{this.state.name}
-							</b>
+				<Card.Body className="text-center">
+					<Card.Title>{this.state.name}</Card.Title>
+					<Card.Text>{this.state.cell_phone_number}</Card.Text>
+					<Card.Text>{this.state.home_address}</Card.Text>
+					<Card.Text>{this.state.birthday}</Card.Text>
+					<Card.Text>{this.state.company}</Card.Text>
+					<Card.Text>{this.state.email}</Card.Text>
+				</Card.Body>
 
-					  </div>
-				  </div>
-			  </div>
+				<Button onClick={this.onEditClick}>Edit Contact</Button>
+				<Button onClick={this.deleteContact.bind(this, this.state.id)}>Delete Contact</Button>
+				</div>
+			</div>
 		 )
 	}
 }

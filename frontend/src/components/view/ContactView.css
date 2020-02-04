@@ -9,13 +9,22 @@
 }
 
 .image-section {
-    background-color: #383838;
 }
 
 .list-section {
     height: 100%;
 }
 
+.overla2y {
+
+    opacity: 0;
+    transition: .5s ease;
+    background-color: #008CBA;
+}
+  
+.contact-card:hover {
+    opacity: 0.5;
+}
 
 .card {
     flex: 0 0 auto;
@@ -23,7 +32,7 @@
 }
 
 .contact-container {
-    
+    background-color: #E8E9EB;
 }
 
 .contact-list {
@@ -35,4 +44,13 @@
 }
 .card-block {
     text-align: left;
+}
+
+.input {
+    background: transparent;
+    width: 50%;
+}
+
+.form-control {
+    margin-bottom: 5px;
 }
