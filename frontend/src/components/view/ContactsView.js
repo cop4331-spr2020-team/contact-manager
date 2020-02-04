@@ -1,47 +1,86 @@
 import React, { Component } from 'react';
 import { Button, Navbar, Card } from "react-bootstrap";
 import { Form, FormGroup, Row, Col, Label, Input, FormFeedback } from 'reactstrap';
+import InfiniteScroll from "react-infinite-scroll-component";
+//import ContactView from './ContactView'
 
 import axios from "axios";
 import './style.css'
 import './ContactView.css'
+
+function updateId(id) {
+	console.log(id)
+	this.setState({id}, () => {
+		this.grabUserData()
+	})
+}
+
 export default class ContactsView extends Component {
 
-  constructor() {
-	 super();
+  constructor(props) {
+	 super(props);
 	 
      this.state = {
-         exampleItems: [],
-         pageOfItems: [],
+         items: [],
+			hasMore: true,
+			doNewSearch: true,
+			offset: 0,
 			name: '',
 			searchName: '',
+			selectedId: null,
      };
 
      // bind function in constructor instead of render (https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/jsx-no-bind.md)
 	  this.onChangePage = this.onChangePage.bind(this);
+	  this.handleCardSelect = this.handleCardSelect.bind(this);
   }
 
-  componentDidMount() {
-    this.grabContacts();
+	componentDidMount() {
+		this.grabContacts(0);
+	}
+
+	updateId = id => {
+		this.setState({
+			 id: id
+		})
   }
 
-  grabContacts() {
-    axios.get(`/api/contacts`, {
-		 params: {
-			 name: this.state.searchName
-		 }
-	 })
-    .then(response => {
-        const data = response.data.data;
-        console.log({ RESPONSE: data} )
-        this.setState({
-          exampleItems: data,
-        })
-    })
-    .catch(error => {
-      console.log(error)
-    })
-  }
+	grabContacts = () => {
+		const { offset } = this.state;
+		const limit = 40;
+		
+		axios.get(`/api/contacts`, {
+			params: {
+				name: this.state.searchName,
+				offset: offset,
+				limit: limit
+			}
+		})
+		.then(response => {
+			const data = response.data.data;
+			console.log(response.data)
+
+			const { doNewSearch } = this.state;
+
+			if (doNewSearch) {
+				this.setState({
+					items: data,
+					doNewSearch: false,
+					offset: data.length+1,
+					hasMore: response.data.hasMore
+				})
+			} else {
+				this.setState({
+					items: [...this.state.items, data],
+					offset: data.length+1,
+					hasMore: response.data.hasMore
+				})
+			}
+		})
+		.catch(error => {
+			console.log(error.response)
+		})
+	}
 
   onChangePage(pageOfItems) {
     // update state with new page of items
@@ -51,9 +90,10 @@ export default class ContactsView extends Component {
   addContact = event => {
     axios.post('/api/contact', { name: this.state.name, cell_phone_number: 'test' })
     .then(response => {
+		 console.log(response.data)
 		const data = response.data.data
       this.setState({
-        exampleItems: [...this.state.exampleItems, { name: data.name, _id: data._id } ],
+			items: [...this.state.items, { name: data.name, _id: data._id } ],
       })
     })
     .catch(error => {
@@ -61,199 +101,226 @@ export default class ContactsView extends Component {
     })
   }
 
-  handleSearchChange = event => {
-	this.setState({
-	  searchName: event.target.value
-	}, () => {
-		this.grabContacts()
-	})
- }
-
-  handleNameChange = event => {
-    this.setState({
-      name: event.target.value
-    });
+  handleScrollUpdate = event => {
+	  this.setState({
+		  doNewSearch: false
+	  }, () => {
+		  this.grabContacts(this.state.offset)
+	  })
   }
 
+	handleSearchChange = event => {
+		this.setState({
+			searchName: event.target.value,
+			doNewSearch: true,
+			offset: 0,
+		}, () => {
+			this.grabContacts()
+		})
+	}
+
+	handleNameChange = event => {
+		this.setState({
+			name: event.target.value
+		});
+	}
+
+	handleCardSelect (id) {
+		updateId(id);
+	}
+
   render() {
+
+	const style = {
+		margin: 6,
+		padding: 8,
+	}
+
     return (
         <div>
-            <div className="container">
-              <div>
-				  <FormGroup>
-                  <Input
-                    className="input"
-                    type="text"
-                    placeholder="Search Contact"
-                    value={this.state.searchName}
-                    onChange={this.handleSearchChange}
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <Input
-                    name="firstName"
-                    className="input"
-                    type="text"
-                    placeholder="First Name"
-                    value={this.state.name}
-                    onChange={this.handleNameChange}
-                  />
-                </FormGroup>
+            <div className="outer-wrap">
+					<div className="row">
+						<div className="col-4">
+							<FormGroup>
+								<Input
+								name="firstName"
+								className="input"
+								type="text"
+								placeholder="First Name"
+								value={this.state.name}
+								onChange={this.handleNameChange}
+								/>
+							</FormGroup>
 
-                <Button onClick={this.addContact}>Add user</Button>
+							<Button onClick={this.addContact}>Add user</Button>
+							<div className="contact-list">
+								<h1>Contacts</h1>
 
-					</div>
-						<div className="container contact-list">
-							<h1>Contacts</h1>
-							{this.state.pageOfItems.map(item =>
-								<div key={item._id} class="card flex-row flex-wrap flex-shrink-3">
-									<div class="card-header">
-										<img className="contact-image" src="/default.png" alt="" />
-									</div>
-									<div class="card-block px-2">
-										<h4 class="card-title card-text">{item.name}</h4>
-										<p class="card-text">16419 SW 50th Ter, Miami, FL, 33185</p>
-										<p class="card-text">305-490-2892</p>
-									</div>
-									<div className="card-block px-2">
-										<a href={`/contact/${item._id}`} class="btn btn-primary">Open</a>
-									</div>
-						  		</div>
-								
-							)}
-							<Pagination items={this.state.exampleItems} onChangePage={this.onChangePage} />
+								<FormGroup>
+									<Input
+									className="input"
+									type="text"
+									placeholder="Search Contact"
+									value={this.state.searchName}
+									onChange={this.handleSearchChange}
+									/>
+								</FormGroup>
+								<InfiniteScroll
+									dataLength={this.state.items.length}
+									next={this.grabContacts}
+									hasMore={this.state.hasMore}
+									height={600}
+									endMessage={
+										<p style={{ textAlign: "center" }}>
+										<b>Yay! You have seen it all</b>
+										</p>
+									}
+									>
+
+									{this.state.items.map(item =>
+										<div 
+											key={item._id} 
+											className="card flex-row flex-wrap flex-shrink-3"
+											onClick={this.handleCardSelect.bind(this, item._id)}
+										
+										>
+											<div className="">
+											<img className="card-image contact-icon rounded-circle" src="/default.png" />
+											</div>
+											<div className="card-block px-2">
+												<h4 className="card-title card-text">{item.name}</h4>
+												<p className="card-text">16419 SW 50th Ter, Miami, FL, 33185</p>
+												<p className="card-text">305-490-2892</p>
+											</div>
+											<div className="card-block px-2">
+												<a href={`/contact/${item._id}`} className="btn btn-primary">Open</a>
+											</div>
+										</div>
+									)}
+
+								</InfiniteScroll>
+							</div>
 						</div>
+						<div className="contact-container col-8">
+							<ContactView updateId={this.updateId}/>
+						</div>
+					</div>
             </div>
-            <hr />
-        </div>
+			<hr />
+		</div>
     );
-}
-}
-
-const defaultProps = {
-  initialPage: 1,
-  pageSize: 10
+	}
 }
 
-export class Pagination extends React.Component {
-  constructor(props) {
-      super(props);
-      this.state = { pager: {} };
-  }
+export class ContactView extends Component {
 
-  componentWillMount() {
-      // set page if items array isn't empty
-      if (this.props.items && this.props.items.length) {
-          this.setPage(this.props.initialPage);
-      }
-  }
+	constructor(props) {
+		 super(props);
 
-  componentDidUpdate(prevProps, prevState) {
-      // reset page if items array has changed
-      if (this.props.items !== prevProps.items) {
-          this.setPage(this.props.initialPage);
-      }
-  }
+		 this.state = {
+			  id: null,
+			  name: '',
+			  newName: '',
+			  isDeleted: false,
+		 };
 
-  setPage(page) {
-      var { items, pageSize } = this.props;
-      var pager = this.state.pager;
+		 updateId = updateId.bind(this);
+	}
 
-      if (page < 1 || page > pager.totalPages) {
-          return;
-      }
+	grabUserData() {
+		 axios.get(`/api/contact/${this.state.id}`)
+		 .then(response => {
+			  const data = response.data.data;
+			  this.setState({
+					name: data.name
+			  })
+		 })
+		 .catch(error => {
+			  console.log(error.response)
+		 })
+	}
 
-      // get new pager object for specified page
-      pager = this.getPager(items.length, page, pageSize);
+	editUserData = event => {
+		 axios.put(`/api/contact/${this.state.id}`, {
+			  name: this.state.newName
+		 })
+		 .then(response => {
+			  console.log(response.data)
+			  if (response.data.success) {
+					this.setState({
+						 name: this.state.newName
+					})
+			  }
+		 })
+		 .catch(error => {
+			  console.log(error.response)
+		 })
+	}
 
-      // get new page of items from items array
-      var pageOfItems = items.slice(pager.startIndex, pager.endIndex + 1);
+	handleNameChange = event => {
+		 this.setState({
+			  newName: event.target.value
+		 })
+	}
 
-      // update state
-      this.setState({ pager: pager });
+	componentDidMount() {
+		 this.grabUserData()
+	}
 
-      // call change page function in parent component
-      this.props.onChangePage(pageOfItems);
-  }
+	deleteContact(id) {
+	  axios.delete(`/api/contact/${id}`)
+	  .then(response => {
+		  console.log('delete attempt.')
+		  if (response.data.success) {
+			  console.log('delete success.')
+			  this.setState({
+				  isDeleted: true
+			  });
+		  }
+	  })
+	  .catch(error => {
+		  console.log(error.response)
+	  })
+	}
 
-  getPager(totalItems, currentPage, pageSize) {
-      // default to first page
-      currentPage = currentPage || 1;
+	render() {
 
-      // default page size is 10
-      pageSize = pageSize || 10;
+		 const { isDeleted } = this.state;
 
-      // calculate total pages
-      var totalPages = Math.ceil(totalItems / pageSize);
+		 return (
+			  <div className="container">
+				  <div className="row">
 
-      var startPage, endPage;
-      if (totalPages <= 10) {
-          // less than 10 total pages so show all
-          startPage = 1;
-          endPage = totalPages;
-      } else {
-          // more than 10 total pages so calculate start and end pages
-          if (currentPage <= 6) {
-              startPage = 1;
-              endPage = 10;
-          } else if (currentPage + 4 >= totalPages) {
-              startPage = totalPages - 9;
-              endPage = totalPages;
-          } else {
-              startPage = currentPage - 5;
-              endPage = currentPage + 4;
-          }
-      }
+					  <div className="col">
 
-      // calculate start and end item indexes
-      var startIndex = (currentPage - 1) * pageSize;
-      var endIndex = Math.min(startIndex + pageSize - 1, totalItems - 1);
+						  <div className="row">
+							  <div className="col text-center">
+									<img className="card-image contact-icon2 rounded-circle" src="/default.png" />
+							  </div>
+						  </div>
 
-      // create an array of pages to ng-repeat in the pager control
-      var pages = [...Array((endPage + 1) - startPage).keys()].map(i => startPage + i);
+							<Card.Body className="text-center">
+								<Card.Title>{this.state.name}</Card.Title>
+								<Card.Text>{this.state.cell_phone_number}</Card.Text>
+								<Button variant="primary">Go somewhere</Button>
+							</Card.Body>
 
-      // return object with all pager properties required by the view
-      return {
-          totalItems: totalItems,
-          currentPage: currentPage,
-          pageSize: pageSize,
-          totalPages: totalPages,
-          startPage: startPage,
-          endPage: endPage,
-          startIndex: startIndex,
-          endIndex: endIndex,
-          pages: pages
-      };
-  }
+							{this.state.id}
+								<Input
+									value={this.state.newName}
+									onChange={this.handleNameChange}
+									placeholder="New Name"
+								>
+								</Input>
+								<Button onClick={this.editUserData}>Update Contact</Button>
+								<Button onClick={this.deleteContact.bind(this, this.state.id)}>Delete Contact</Button>
+								<b>
+									{this.state.name}
+								</b>
 
-  render() {
-      var pager = this.state.pager;
-
-      if (!pager.pages || pager.pages.length <= 1) {
-          // don't display pager if there is only 1 page
-          return null;
-      }
-
-      return (
-          <ul className="pagination">
-              <li className={pager.currentPage === 1 ? 'disabled' : ''}>
-                  <a onClick={() => this.setPage(1)}>First</a>
-              </li>
-              <li className={pager.currentPage === 1 ? 'disabled' : ''}>
-                  <a onClick={() => this.setPage(pager.currentPage - 1)}>Previous</a>
-              </li>
-              {pager.pages.map((page, index) =>
-                  <li key={index} className={pager.currentPage === page ? 'active' : ''}>
-                      <a onClick={() => this.setPage(page)}>{page}</a>
-                  </li>
-              )}
-              <li className={pager.currentPage === pager.totalPages ? 'disabled' : ''}>
-                  <a onClick={() => this.setPage(pager.currentPage + 1)}>Next</a>
-              </li>
-              <li className={pager.currentPage === pager.totalPages ? 'disabled' : ''}>
-                  <a onClick={() => this.setPage(pager.totalPages)}>Last</a>
-              </li>
-          </ul>
-      );
-  }
+					  </div>
+				  </div>
+			  </div>
+		 )
+	}
 }

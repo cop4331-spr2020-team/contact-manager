@@ -176,9 +176,13 @@ getContactsByUsername = async (req, res) => {
 			}
 		}
 
+		console.log(`LIMIT=${req.query.limit}; OFFSET=${req.query.offset}`)
+		
+		const limit = req.query.limit || 10;
+
 		var options = {
 			offset: req.query.offset || 0,
-			limit: req.query.limit || 100
+			limit: limit
 		}
 
 		Contact.paginate(query, options).then(contacts_docs => {
@@ -189,6 +193,7 @@ getContactsByUsername = async (req, res) => {
 				})
 			}
 
+			console.log(req.query.offset)
 			const contacts = contacts_docs.docs
 
 			const contacts_sorted = contacts.sort((a, b) => {
@@ -203,9 +208,10 @@ getContactsByUsername = async (req, res) => {
 
 				return 0;
 			})
-	
+
 			return res.status(200).json({
 				success: true,
+				hasMore: contacts_sorted.length < limit ? false : true,
 				data: contacts_sorted
 			})
 

@@ -1,15 +1,29 @@
-.contact-image {
-    width: 40%;    
+.contact-icon {
+    height: 200px;
+    width: 200px;
+}
+
+.contact-icon2 {
+    height: 400px;
+    width: 400px;
+}
+
+.outer-wrap {
+    margin: 2%;
 }
 
 .card {
     flex: 0 0 auto;
-    margin-top: 10px;
+    margin: 15px;
     overflow-y: auto;
 }
 
+.contact-container {
+    
+}
+
 .contact-list {
-    width: 90vh;
+    
 }
 
 .contact-info {

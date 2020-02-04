@@ -10,16 +10,17 @@ export default class ContactView extends Component {
         super(props);
 
         this.state = {
+            id: null,
             name: '',
             newName: '',
             isDeleted: false,
         };
 
-        this.deleteContact = this.deleteContact.bind(this);
+        this.props.updateId.bind(this)
     }
 
     grabUserData() {
-        axios.get(`/api/contact/${this.props.match.params.id}`)
+        axios.get(`/api/contact/${this.props.id}`)
         .then(response => {
             const data = response.data.data;
             this.setState({
@@ -32,7 +33,7 @@ export default class ContactView extends Component {
     }
 
     editUserData = event => {
-        axios.put(`/api/contact/${this.props.match.params.id}`, {
+        axios.put(`/api/contact/${this.props.id}`, {
             name: this.state.newName
         })
         .then(response => {
@@ -55,6 +56,7 @@ export default class ContactView extends Component {
     }
 
     componentDidMount() {
+        console.log(this.state.id)
         this.grabUserData()
     }
 
@@ -84,6 +86,18 @@ export default class ContactView extends Component {
 
         return (
             <div className="container">
+                <Card style={{ width: '18rem' }}>
+                    <Card.Img className="contact-icon" variant="top" src="holder.js/100px180" />
+                    <Card.Body>
+                        <Card.Title>Card Title</Card.Title>
+                        <Card.Text>
+                        Some quick example text to build on the card title and make up the bulk of
+                        the card's content.
+                        </Card.Text>
+                        <Button variant="primary">Go somewhere</Button>
+                    </Card.Body>
+                </Card>
+
                 <Input
                     value={this.state.newName}
                     onChange={this.handleNameChange}
@@ -91,7 +105,7 @@ export default class ContactView extends Component {
                 >
                 </Input>
                 <Button onClick={this.editUserData}>Update Contact</Button>
-                <Button onClick={this.deleteContact.bind(this, this.props.match.params.id)}>Delete Contact</Button>
+                <Button onClick={this.deleteContact.bind(this, this.props.id)}>Delete Contact</Button>
                 <b>
                     {this.state.name}
                 </b>
