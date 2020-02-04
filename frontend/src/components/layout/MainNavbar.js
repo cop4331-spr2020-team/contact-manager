@@ -1,20 +1,21 @@
 import React, { Component } from 'react';
 import { Navbar, Button } from 'react-bootstrap';
 import axios from 'axios'
-
 import './Navbar.css';
 
 export default class MainNavbar extends Component {
 
-    logout = event => {
-        axios.post('/api/auth/logout')
+    logout = event => {        
+        axios.post('/api/auth/logout', { withCredentials: true })
         .then(response => {
-            console.log(response.data)
+            if (response.data.success) {
+                console.log(response.data)
+                window.location.reload();
+            }
         })
         .catch(error => {
             console.log(error.response)
         })
-        window.location.reload(false);
     }
 
     render() {
