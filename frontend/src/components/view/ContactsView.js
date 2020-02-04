@@ -1,390 +1,784 @@
 import React, { Component } from 'react';
-import ContactCard from './ContactCard'
-import ContactPagination from './ContactPagination';
-import { Button, Navbar, Card } from "react-bootstrap";
-import { Form, FormGroup, Row, Col, Label, Input, FormFeedback } from 'reactstrap';
+import { Spinner, Button, InputGroup, FormControl } from "react-bootstrap";
+import InfiniteScroll from "react-infinite-scroll-component";
+//import ContactView from './ContactView'
 
-import ReactPaginate from 'react-paginate'
-
-import { getContacts } from '../../actions/contactActions'
 import axios from "axios";
-
 import './style.css'
-export class ContactsListView extends Component {
+import './ContactView.css'
+import { Redirect } from 'react-router-dom';
 
-  constructor() {
-	 super();
+function updateId(id) {
+	this.setState({id: id, isEdit: false}, () => {
+		this.grabUserData()
+	})
+}
+
+function makeNewContact() {
+	this.setState({id: null, isEdit: true}, () => {
+		this.resetForms()
+	})
+}
+
+function sortedIndex(items, contact) {
+    var low = 0,
+        high = items.length;
+
+    while (low < high) {
+        var mid = (low + high) >>> 1;
+        if (items[mid].name < contact.name) low = mid + 1;
+        else high = mid;
+	}
+	
+    return low;
+}
+
+function ResetOrCancel(props) {
+  if (props.id === null) {
+    return <div className="col">
+        <Button variant="danger" onClick={props.resetForms} className="col-6 btn btn-secondary">Reset</Button>
+      </div>
+  }
+  
+  return <div className="col">
+  <Button variant="danger" onClick={props.grabUserData} className="col-6 btn btn-secondary">Reset</Button>
+    </div>
+}
+
+function add(items, contact, index) {
+	var tarray = [...items]
+	tarray.splice(index,0,contact)
+	return tarray;
+}
+
+function Title(props) {
+	const isNew = props.id === null;
+	if (isNew) {
+		return <h1>New Contact</h1>
+	} else {
+		return <h1></h1>
+	}
+}
+
+function SubmitButton(props) {
+  const isNew = props.id === null;
+  if (isNew) {
+    return <div onClick={props.onChange} className="col">
+      <Button className="col-6 btn btn-primary">Create</Button>
+    </div>
+  }
+
+  return <div onClick={props.onChange} className="col">
+      <Button className="col-6 btn btn-primary">Done</Button>
+    </div>
+}
+
+export default class ContactsView extends Component {
+
+  constructor(props) {
+	 super(props);
 	 
      this.state = {
-         exampleItems: [],
-         pageOfItems: [],
+      items: [],
+			hasMore: true,
+			doNewSearch: true,
+			offset: 0,
 			name: '',
 			searchName: '',
+      selectedId: null,
+      isAuthenticated: false,
+      isLoading: true,
      };
 
      // bind function in constructor instead of render (https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/jsx-no-bind.md)
 	  this.onChangePage = this.onChangePage.bind(this);
-	  this.deleteContact = this.deleteContact.bind(this);
+	  this.handleCardSelect = this.handleCardSelect.bind(this);
+	  this.deleteContact = this.deleteContact
   }
 
-  componentDidMount() {
-    this.grabContacts();
+  deleteContact = (id) => {
+	  this.setState({
+		  items: this.state.items.filter(contact => contact._id !== id)
+	  })
   }
 
-  deleteContact(id) {
-		axios.delete(`/api/contact/${id}`)
+	updateId = id => {
+		this.setState({
+			 id: id
+		})
+  }
+
+	grabContacts = () => {
+		const { offset } = this.state;
+		const limit = 40;
+    
+    console.log('grabbing contacts')
+		axios.get(`/api/contacts`, {
+			params: {
+				name: this.state.searchName,
+				offset: offset,
+				limit: limit
+			}
+		})
 		.then(response => {
-			console.log('delete attempt.')
-			if (response.data.success) {
-				console.log('delete success.')
-				this.setState(prevState => ({
-					exampleItems: prevState.exampleItems.filter(contact => contact._id != id)
-				}));
+			const data = response.data.data;
+			const { doNewSearch } = this.state;
+
+			if (doNewSearch) {
+				this.setState({
+					items: data,
+					doNewSearch: false,
+					offset: data.length+1,
+					hasMore: response.data.hasMore
+				})
+			} else {
+				this.setState({
+					items: [...this.state.items, data],
+					offset: data.length+1,
+					hasMore: response.data.hasMore
+				})
 			}
 		})
 		.catch(error => {
-			console.log(error.response)
+      console.log(error.response)
 		})
-  }
-
-  grabContacts() {
-    axios.get(`/api/contacts`, {
-		 params: {
-			 name: this.state.searchName
-		 }
-	 })
-    .then(response => {
-        const data = response.data.data;
-        console.log({ RESPONSE: data} )
-        this.setState({
-          exampleItems: data,
-        })
-    })
-    .catch(error => {
-      console.log(error)
-    })
-  }
+	}
 
   onChangePage(pageOfItems) {
     // update state with new page of items
     this.setState({ pageOfItems: pageOfItems });
   }
 
-  addContact = event => {
-    axios.post('/api/contact', { name: this.state.name, cell_phone_number: 'test' })
+	editContact = (contact) => {
+		const nitems = this.state.items.map(tcontact => {
+			if (tcontact._id === contact._id) {
+				return contact;	
+			}
+
+			return tcontact;
+		})
+		this.setState({
+			items: nitems
+		})
+	}
+
+	addContact = (contact) => {
+    console.log('inserting into list')
+		const index = sortedIndex(this.state.items, contact)
+		this.setState({
+			items: add(this.state.items, contact, index)
+		})
+	}
+
+  handleScrollUpdate = event => {
+	  this.setState({
+		  doNewSearch: false
+	  }, () => {
+		  this.grabContacts(this.state.offset)
+	  })
+  }
+
+	handleSearchChange = event => {
+		this.setState({
+			searchName: event.target.value,
+			doNewSearch: true,
+			offset: 0,
+		}, () => {
+			this.grabContacts()
+		})
+	}
+
+	handleNameChange = event => {
+		this.setState({
+			name: event.target.value
+		});
+	}
+
+	handleCardSelect (id) {
+		updateId(id);
+  }
+  
+  handleMakeNewContact() {
+    makeNewContact();
+  }
+
+  checkLoginStatus() {
+    axios.get('/api/auth/logged_in', { withCredentials: true })
     .then(response => {
-		const data = response.data.data
-      this.setState({
-        exampleItems: [...this.state.exampleItems, { name: data.name, _id: data._id } ],
-      })
-    })
-    .catch(error => {
-      console.log(error.response.data)
-    })
-  }
-
-  handleSearchChange = event => {
-	this.setState({
-	  searchName: event.target.value
-	}, () => {
-		this.grabContacts()
-	})
- }
-
-  handleNameChange = event => {
-    this.setState({
-      name: event.target.value
-    });
-  }
-
-  render() {
-    return (
-        <div>
-            <div className="container">
-              <div>
-				  <FormGroup>
-                  <Input
-                    className="input"
-                    type="text"
-                    placeholder="Search Contact"
-                    value={this.state.searchName}
-                    onChange={this.handleSearchChange}
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <Input
-                    name="firstName"
-                    className="input"
-                    type="text"
-                    placeholder="First Name"
-                    value={this.state.name}
-                    onChange={this.handleNameChange}
-                  />
-                </FormGroup>
-
-                <Button onClick={this.addContact}>Add user</Button>
-
-					</div>
-						<div className="text-center">
-							<h1>React - Pagination Example with logic like Google</h1>
-							{this.state.pageOfItems.map(item =>
-								<div>
-									<a href={`/contact/${item._id}`} key={item._id}>{item.name}</a>
-									<Button onClick={this.deleteContact.bind(this, item._id)}>Delete Contact</Button>
-								</div>
-							)}
-							<Pagination items={this.state.exampleItems} onChangePage={this.onChangePage} />
-						</div>
-            </div>
-            <hr />
-        </div>
-    );
-}
-}
-
-const defaultProps = {
-  initialPage: 1,
-  pageSize: 10
-}
-
-class Pagination extends React.Component {
-  constructor(props) {
-      super(props);
-      this.state = { pager: {} };
-  }
-
-  componentWillMount() {
-      // set page if items array isn't empty
-      if (this.props.items && this.props.items.length) {
-          this.setPage(this.props.initialPage);
-      }
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-      // reset page if items array has changed
-      if (this.props.items !== prevProps.items) {
-          this.setPage(this.props.initialPage);
-      }
-  }
-
-  setPage(page) {
-      var { items, pageSize } = this.props;
-      var pager = this.state.pager;
-
-      if (page < 1 || page > pager.totalPages) {
-          return;
-      }
-
-      // get new pager object for specified page
-      pager = this.getPager(items.length, page, pageSize);
-
-      // get new page of items from items array
-      var pageOfItems = items.slice(pager.startIndex, pager.endIndex + 1);
-
-      // update state
-      this.setState({ pager: pager });
-
-      // call change page function in parent component
-      this.props.onChangePage(pageOfItems);
-  }
-
-  getPager(totalItems, currentPage, pageSize) {
-      // default to first page
-      currentPage = currentPage || 1;
-
-      // default page size is 10
-      pageSize = pageSize || 10;
-
-      // calculate total pages
-      var totalPages = Math.ceil(totalItems / pageSize);
-
-      var startPage, endPage;
-      if (totalPages <= 10) {
-          // less than 10 total pages so show all
-          startPage = 1;
-          endPage = totalPages;
-      } else {
-          // more than 10 total pages so calculate start and end pages
-          if (currentPage <= 6) {
-              startPage = 1;
-              endPage = 10;
-          } else if (currentPage + 4 >= totalPages) {
-              startPage = totalPages - 9;
-              endPage = totalPages;
-          } else {
-              startPage = currentPage - 5;
-              endPage = currentPage + 4;
-          }
-      }
-
-      // calculate start and end item indexes
-      var startIndex = (currentPage - 1) * pageSize;
-      var endIndex = Math.min(startIndex + pageSize - 1, totalItems - 1);
-
-      // create an array of pages to ng-repeat in the pager control
-      var pages = [...Array((endPage + 1) - startPage).keys()].map(i => startPage + i);
-
-      // return object with all pager properties required by the view
-      return {
-          totalItems: totalItems,
-          currentPage: currentPage,
-          pageSize: pageSize,
-          totalPages: totalPages,
-          startPage: startPage,
-          endPage: endPage,
-          startIndex: startIndex,
-          endIndex: endIndex,
-          pages: pages
-      };
-  }
-
-  render() {
-      var pager = this.state.pager;
-
-      if (!pager.pages || pager.pages.length <= 1) {
-          // don't display pager if there is only 1 page
-          return null;
-      }
-
-      return (
-          <ul className="pagination">
-              <li className={pager.currentPage === 1 ? 'disabled' : ''}>
-                  <a onClick={() => this.setPage(1)}>First</a>
-              </li>
-              <li className={pager.currentPage === 1 ? 'disabled' : ''}>
-                  <a onClick={() => this.setPage(pager.currentPage - 1)}>Previous</a>
-              </li>
-              {pager.pages.map((page, index) =>
-                  <li key={index} className={pager.currentPage === page ? 'active' : ''}>
-                      <a onClick={() => this.setPage(page)}>{page}</a>
-                  </li>
-              )}
-              <li className={pager.currentPage === pager.totalPages ? 'disabled' : ''}>
-                  <a onClick={() => this.setPage(pager.currentPage + 1)}>Next</a>
-              </li>
-              <li className={pager.currentPage === pager.totalPages ? 'disabled' : ''}>
-                  <a onClick={() => this.setPage(pager.totalPages)}>Last</a>
-              </li>
-          </ul>
-      );
-  }
-}
-
-class ContactsView extends Component {
-
-    state = {
-        allContacts: [],
-        currentContacts: [],
-        currentPage: null,
-        totalPages: null
-      };
-    
-      componentDidMount() {
-        getContacts(allContacts => {
-          this.setState({ allContacts });
+			if (response.data.logged_in && this.state.isAuthenticated === false) {
+        console.log('done')
+				this.setState({
+					isAuthenticated: true,
+					isLoading: false,
+					user: response.data.user,
+					name: response.data.name
         });
-      }
+        this.grabContacts(0);
+			} else if (!response.data.logged_in && this.state.isAuthenticated === true) {
+				this.setState({
+					isAuthenticated: false,
+					isLoading: false,					
+					user: {}
+				})
+			}
+		}).catch(error => {
+			this.setState({
+				isAuthenticated: false,
+				isLoading: false,
+			})
+			console.log('login error.')
+		})
+	}
 
-      handleAddUser = event => {   
-        console.log('hmmm')
-        axios.put('/api/contact', { 
-          name: "Cool", 
-          cell_phone_number: "hm" 
-        })
-        .then(response => {
-          console.log(response.data)
-          if (response.data.success) {
-            this.state.allContacts.push(response.data)
-          }
-        })
-        .catch(error => {
-          console.log(error)
-        })
-      }
-    
-      onPageChanged = data => {
-        const { allContacts } = this.state;
-        const { currentPage, totalPages, pageLimit } = data;
-        const offset = (currentPage - 1) * pageLimit;
-        const currentContacts = allContacts.slice(offset, offset + pageLimit);
-    
-        this.setState({ currentPage, currentContacts, totalPages });
-      };
-    
-      render() {
+	componentDidMount() {
+    this.checkLoginStatus();
+	}
 
-        const navLinkStyle = {
-          color: "white",
-          textDecoration: "none",
-          fontWeight: "bold",
-        };
+  render() {
 
-        const {
-          allContacts,
-          currentContacts,
-          currentPage,
-          totalPages
-        } = this.state;
-        const totalContacts = allContacts.length;
-        
-        const headerClass = [
-          "text-dark py-2 pr-4 m-0",
-          currentPage ? "border-gray border-right" : ""
-        ]
-          .join(" ")
-          .trim();
-    
-        return (
-          <div>
-            <Navbar bg="dark" variant="dark">
-              <Navbar.Brand
-                className="justify-content-left"
-                style={navLinkStyle}
-                href="/"
-              >
-                <img className="icon" src="/coolbeans.png" />
-              </Navbar.Brand>
-              <Navbar.Collapse className="dark-navbar justify-content-end"></Navbar.Collapse>
-              <Button onClick={this.handleLogout} variant="outline-success" className="loginButton">Logout</Button>
-            </Navbar>
-            
-            <div className="container">
-              <div className="name">
-                Hello, {this.state.user}
-              </div>
-            </div>
-            
-            <div className="container mb-5">
-              <div className="row d-flex flex-row py-5">
-                <div className="w-100 px-4 py-5 d-flex flex-row flex-wrap align-items-center justify-content-between">
-                  <div className="d-flex flex-row align-items-center">
-                          <Button onClick={this.handleAddUser}>Add user</Button>
-                    <h2 className={headerClass}>
-                      <strong className="text-secondary">{totalContacts}</strong>{" "}
-                      Contacts
-                    </h2>
-                    {currentPage && (
-                      <span className="current-page d-inline-block h-100 pl-4 text-secondary">
-                        Page <span className="font-weight-bold">{currentPage}</span> /{" "}
-                        <span className="font-weight-bold">{totalPages}</span>
-                      </span>
-                    )}
+    const { isAuthenticated, isLoading } = this.state;
+
+    if (isLoading) {
+      return (
+        <div style={{height:"90vh", display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center",  width:"100wh"}}>
+          <Spinner animation="border" variant="light" style={{height:"300px", width:"300px"}}/>
+        </div>
+      )
+    }
+
+    if (!isAuthenticated) {
+      return (
+        <Redirect to ='/' />
+      )
+    }
+
+    return (
+      <div className="whole" style={{ backgroundColor: "#f8f9fa"}}>
+        <div className="leftHalf" style={{ paddingTop: "2%", paddingBottom: "2%", height: "100%", overflowY: "scroll", background: "#f8f9fa"}}>
+          <div className="container-fluid">
+            <InputGroup className="mb-3">
+              <FormControl
+                className="form-control"
+                type="texts"
+                placeholder="Search Contact"
+                value={this.state.searchName}
+                onChange={this.handleSearchChange}
+              />
+              <InputGroup.Append>
+                    <Button onClick={this.handleMakeNewContact} className="butt" variant="outline-primary" size="sm">+</Button>
+              </InputGroup.Append>
+            </InputGroup>
+            <hr/>
+
+            <div id="scrollableDiv" className="smooth-scroll" style={{ height: "100%", backgroundColor: "#f8f9fa"}}>
+              <InfiniteScroll
+                dataLength={this.state.items.length}
+                next={this.grabContacts}
+                hasMore={this.state.hasMore}
+                scrollableTarget="scrollableDiv"
+                >
+
+                {this.state.items.map(item =>
+                  <div 
+                    style={{backgroundColor: "transparent"}}
+                    key={item._id} 
+                    className="contact-card container"
+                    onClick={this.handleCardSelect.bind(this, item._id)}
+                  
+                  >
+                    <div className="card" style={{background: "transparent"}}>
+                      <div className="row no-gutters">
+                        <div className="col-2" style={{background: "gray"}}>
+                          <img className="card-image contact-icon rounded-circle" src="/default.png" />
+                        </div>
+                        <div className="col-8">
+                          <div className="flex-row text-left">
+                            <div className="col">
+                              <b className="card-text">{item.name + " " + item.last}</b>
+                            </div>
+                            <div className="col">
+                              <label size="sm" className="card-text text-muted">{item.company}</label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <hr/>
                   </div>
-                  <div className="d-flex flex-row py-4 align-items-center">
-                    <ContactPagination
-                      totalRecords={totalContacts}
-                      pageLimit={10}
-                      pageNeighbours={1}
-                      onPageChanged={this.onPageChanged}
+                )}
+
+              </InfiniteScroll>
+            </div>
+          </div>
+        </div>
+        <div className="rightHalf" style={{ paddingTop: "2%",}}>
+          <ContactView makeNewContact={this.makeNewContact} addContact={this.addContact} editContact={this.editContact} deleteContact={this.deleteContact} updateId={this.updateId}/>
+        </div>
+      </div>
+    );
+	}
+}
+
+export class ContactView extends Component {
+
+	constructor(props) {
+		 super(props);
+
+		 this.state = {
+      name: '',
+      last: '',
+			cell_phone_number: '',
+			home_address: '',
+			birthday: '',
+			note: '',
+			email: '',
+			company: '',
+			isEdit: true,
+
+			id: null,
+		 };
+
+     updateId = updateId.bind(this);
+     makeNewContact = makeNewContact.bind(this);
+	}
+
+	grabUserData() {
+    console.log('grabbing user data')
+		 axios.get(`/api/contact/${this.state.id}`)
+		 .then(response => {
+			  const data = response.data.data;
+			  this.setState({
+          name: data.name,
+          last: data.last,
+					cell_phone_number: data.cell_phone_number,
+					home_address: data.home_address,
+					birthday: data.birthday,
+					note: data.note,
+					email: data.email,
+					company: data.company,
+			  })
+		 })
+		 .catch(error => {
+       console.log(error.response)
+		 })
+	}
+
+	editUserData = event => {
+
+
+		const data = {
+			name: this.state.name,
+				cell_phone_number: this.state.cell_phone_number,
+				home_address: this.state.home_address,
+				birthday: this.state.birthday,
+				note: this.state.note,
+				email: this.state.email,
+        company: this.state.company,
+        last: this.state.last,
+		}
+
+    // Creating new contact
+		if (!this.state.id) {
+      console.log('creating new contact')
+			axios.post('/api/contact', data)
+			.then(response => {
+
+				const data = response.data.data
+        console.log('got data back')
+        console.log(data)
+
+				this.setState({
+					id: data._id,
+					isEdit: false,
+				})
+
+				this.props.addContact(data)
+        console.log('sent request to contacts list')
+
+			})
+			.catch(error => {
+        console.log('error creating contact')
+        console.log(error.response)
+			})
+
+		// Editing contact
+		} else {
+			axios.put(`/api/contact/${this.state.id}`, data)
+			.then(response => {
+
+				data._id = this.state.id
+
+				this.props.editContact(data)
+				this.setState({
+					isEdit: false,
+				})
+
+			})
+			.catch(error => {
+			})
+		}
+	}
+
+	handleNameChange = event => {
+		this.setState({
+			 name: event.target.value
+		})
+	}
+
+	handleEmailChange = event => {
+		 this.setState({
+			  email: event.target.value
+		 })
+	}
+
+	handleNumberChange = event => {
+		this.setState({
+			 cell_phone_number: event.target.value
+		})
+	}
+
+	handleNoteChange = event => {
+		this.setState({
+			note: event.target.value
+		})
+	}
+
+	handleCompanyChange = event => {
+		this.setState({
+			company: event.target.value
+		})
+	}
+
+	handleBirthdayChange = event => {
+		this.setState({
+			birthday: event.target.value
+		})
+	}
+
+	handleAddressChange = event => {
+		this.setState({
+			home_address: event.target.value
+		})
+  }
+  
+  handlelastChange = event => {
+		this.setState({
+			last: event.target.value
+		})
+	}
+
+	onEditClick = event => {
+		this.setState({
+			isEdit: true
+		})
+  }
+  
+  getResetOrCancel = () => {
+    if (this.state.id === null) {
+      return <div className="col">
+          <Button variant="danger" onClick={this.resetForms} className="col-6 btn btn-secondary">Reset</Button>
+        </div>
+    }
+    
+    return <div className="col">
+    <Button variant="danger" onClick={this.grabUserData} className="col-6 btn btn-secondary">Reset</Button>
+      </div>
+  }
+
+	deleteContact(id) {
+	  axios.delete(`/api/contact/${id}`)
+	  .then(response => {
+		  if (response.data.success) {
+			  const id = this.state.id;
+			  this.setState({
+        name: '',
+        last: '',
+				cell_phone_number: '',
+				home_address: '',
+				birthday: '',
+				note: '',
+				email: '',
+				company: '',
+				isEdit: true,
+				id: null,
+
+			  }, () => {
+				  this.props.deleteContact(id)
+			  });
+		  }
+	  })
+	  .catch(error => {
+	  })
+  }
+
+	resetForms = event => {
+		this.setState({
+      name: '',
+      last: '',
+      cell_phone_number: '',
+      home_address: '',
+      birthday: '',
+      note: '',
+      email: '',
+      company: '',
+		})
+	}
+
+	render() {
+
+		 const { isEdit, isDeleted } = this.state;
+
+		if (isEdit || isDeleted) {
+
+			return (
+        <div className="container bg-light text-dark">
+          <div className="row justify-content-center align-items-center">
+            <div className="col text-center image-section">
+              <img className="card-image contact-icon2 rounded-circle" src="/default.png" />
+            </div>
+          </div>
+          <hr/>
+          <div className="row justify-content-center align-items-center">
+            <div className="col col-sm-6 col-md-6 col-lg-4 col-xl-7">
+              <form action="">
+                <hr/>
+                <div className="form-row" style={{display: "flex", alignItems: "center" }}>
+                  <div className="col-2">
+                    <label>First Name:</label>
+                  </div>
+                  <div className="col-3">
+                    <input 
+                      type="texts" 
+                      className="form-control" 
+                      placeholder="John"
+                      value={this.state.name}
+                      onChange={this.handleNameChange}
+                    />
+                  </div>
+                  <div className="col-3">
+                    <label>Last Name:</label>
+                  </div>
+                  <div className="col-4">
+                    <input 
+                      type="texts" 
+                      className="form-control" 
+                      placeholder="Doe"
+                      value={this.state.last}
+                      onChange={this.handlelastChange}
                     />
                   </div>
                 </div>
-                {currentContacts.filter(contact => contact !== null).map(contact => (
-                  <ContactCard name={contact.name} />
-                ))}
-              </div>
+                <hr/>
+                <div className="form-row" style={{display: "flex", alignItems: "center" }}>
+                  <div className="col-4">
+                    <label>Company:</label>
+                  </div>
+                  <div className="col">
+                    <input 
+                      type="texts" 
+                      className="form-control" 
+                      placeholder="UCF CS College"
+                      value={this.state.company}
+                      onChange={this.handleCompanyChange}
+                    />
+                  </div>
+                </div>
+                <hr/>
+                <div className="form-row" style={{display: "flex", alignItems: "center" }}>
+                  <div className="col-4">
+                    <label>Mobile:</label>
+                  </div>
+                  <div className="col">
+                    <input 
+                      type="tel" 
+                      className="form-control" 
+                      placeholder="+1-(123)-456-7890"
+                      value={this.state.cell_phone_number}
+                      onChange={this.handleNumberChange}
+                    />
+                  </div>
+                </div>
+                {/*
+                <div className="form-row">
+                  <div className="col-4">
+                    <label>Phone:</label>
+                  </div>
+                  <div className="col">
+                    <input type="tel" className="form-control" placeholder="+1-(123)-456-7890" />
+                  </div>
+                </div>
+                */}
+                <hr/>
+                <div className="form-row" style={{display: "flex", alignItems: "center" }}>
+                  <div className="col-4">
+                    <label>Email:</label>
+                  </div>
+                  <div className="col">
+                    <input 
+                      type="email" 
+                      className="form-control" 
+                      placeholder="example@email.com"
+                      value={this.state.email}
+                      onChange={this.handleEmailChange}
+                    />
+                  </div>
+                </div>
+                <hr/>
+                <div className="form-row" style={{display: "flex", alignItems: "center" }}>
+                  <div className="col-4">
+                    <label>Home Address:</label>
+                  </div>
+                  <div className="col">
+                    <input 
+                      type="texts" 
+                      className="form-control" 
+                      placeholder="4000 Central Florida Blvd, Orlando, FL 32816"
+                      value={this.state.home_address}
+                      onChange={this.handleAddressChange}
+                    />
+                  </div>
+                </div>
+                <hr/>
+                <div className="form-row" style={{display: "flex", alignItems: "center" }}>
+                  <div className="col-4">
+                    <label>Birthday:</label>
+                  </div>
+                  <div className="col">
+                    <input 
+                      type="date" 
+                      className="form-control" 
+                      placeholder="February 4, 2020" 
+                      value={this.state.birthday}
+                      onChange={this.handleBirthdayChange}
+                    />
+                  </div>
+                </div>
+                <hr/>
+                <div className="form-row" style={{display: "flex", alignItems: "center" }}>
+                  <div className="col-4">
+                    <label>Note:</label>
+                  </div>
+                  <div className="col">
+                    <textarea 
+                      type="text" 
+                      className="form-control" 
+                      placeholder="This is a cool guy." 
+                      value={this.state.note}
+                      onChange={this.handleNoteChange}
+                    />
+                  </div>
+                </div>
+                <hr/>
+                <div className="form-group">
+                  <div className="container">
+                    <div className="row">
+                      <div className="col"><div className="col"><ResetOrCancel grabUserData={this.grabUserData.bind(this)} resetForms={this.resetForms.bind(this)} id={this.state.id} /></div></div>
+                      <SubmitButton onChange={this.editUserData} id={this.state.id} />
+                    </div>
+                  </div>
+                </div>
+              </form>
             </div>
           </div>
-        );
-      }
+        </div>
+			)
+		}
+
+		 return (
+      <div className="container-fluid h-100 bg-light text-dark">
+      <Title id={this.state.id}/>
+      <div className="row justify-content-center align-items-center">
+        <div className="col text-center image-section">
+          <img className="card-image contact-icon2 rounded-circle" src="/default.png" />
+          <h1>{this.state.name + ' ' + this.state.last || ''}</h1>
+        </div>
+      </div>
+      <hr/>
+      <div className="row justify-content-center align-items-center h-100">
+        <div className="col col-sm-6 col-md-6 col-lg-4 col-xl-7">
+          <form action="">
+            <hr/>
+            <div className="form-row">
+              <div className="col-4">
+                <label>Company:</label>
+              </div>
+              <div className="col">
+                <b>{this.state.company}</b>
+              </div>
+            </div>
+            <hr/>
+            <div className="form-row">
+              <div className="col-4">
+                <label>Mobile:</label>
+              </div>
+              <div className="col">
+                <b>{this.state.cell_phone_number}</b>
+              </div>
+            </div>
+            {/*
+            <div className="form-row">
+              <div className="col-4">
+                <label>Phone:</label>
+              </div>
+              <div className="col">
+                <input type="tel" className="form-control" placeholder="+1-(123)-456-7890" />
+              </div>
+            </div>
+            */}
+            <hr/>
+            <div className="form-row">
+              <div className="col-4">
+                <label>Email:</label>
+              </div>
+              <div className="col">
+                <b>{this.state.email}</b>
+              </div>
+            </div>
+            <hr/>
+            <div className="form-row">
+              <div className="col-4">
+                <label>Home Address:</label>
+              </div>
+              <div className="col">
+                <b>{this.state.home_address}</b>
+              </div>
+            </div>
+            <hr/>
+            <div className="form-row">
+              <div className="col-4">
+                <label>Birthday:</label>
+              </div>
+              <div className="col">
+                <b>{this.state.birthday}</b>
+              </div>
+            </div>
+            <hr/>
+            <div className="form-row">
+              <div className="col-4">
+                <label>Note:</label>
+              </div>
+              <div className="col">
+                <textarea
+                  readOnly
+                  type="text" 
+                  className="form-control" 
+                  value={this.state.note}
+                />
+              </div>
+            </div>
+            <hr/>
+            <div className="form-group">
+              <div className="container">
+                <div className="row">
+                  <div className="col"><Button variant="danger" onClick={this.deleteContact.bind(this, this.state.id)} className="col-6 btn btn-secondary">Delete</Button></div>
+                  <div className="col"><Button onClick={this.onEditClick} className="col-6 btn btn-primary">Edit</Button></div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+			)
+	}
 }

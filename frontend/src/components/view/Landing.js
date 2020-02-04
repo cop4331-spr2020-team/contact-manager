@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Redirect } from 'react-router-dom'
 import { Button } from "react-bootstrap";
 import { Navbar } from "react-bootstrap";
 import Register from '../auth/Register'
@@ -88,15 +89,9 @@ class Landing extends Component {
 			fontWeight: "bold",
 		};
 
-		if (this.state.isLoading){
-			return (
-				<div>Loading...</div>
-			)
-		}
-
 		if (!this.state.isAuthenticated) {
 			return (
-				<div className="root">
+				<div className="root fullscreen" style={{backgroundColor: "white"}}>
 					<div className="container-fluid background">
 						<Navbar className="dark-navbar justify-content-left">
 							<Navbar.Brand
@@ -145,11 +140,13 @@ class Landing extends Component {
 										After registering, and loging in to your new account, you will be prompted with a
 										page where you have the following operations:
 										<br />
-										<ul>
-											<li>Add contact</li>
-											<li>Delete contacts</li>
-											<li>Search contacts</li>
-										</ul>
+										<div class="row" style={{paddingRight: "25px"}}>
+											<ul style={{textAlign: "left", margin: "0 auto"}}>
+												<li>Add contact</li>
+												<li>Delete contacts</li>
+												<li>Search contacts</li>
+											</ul>
+										</div>
 									</div>
 								</div>
 								<div className="col">
@@ -163,7 +160,7 @@ class Landing extends Component {
 						</div>
 					</div>
 
-					<Navbar fixed="bottom">
+					<Navbar fixed="bottom" variant="light" style={{ maxHeight: "35px",backgroundColor: "#ededed"}}>
 							<Navbar.Text>© Team 6, Spring 2020.
 							</Navbar.Text>
 					</Navbar>
@@ -174,7 +171,7 @@ class Landing extends Component {
 
 		
 		return (
-			<ContactsListView perPage={2} />
+			<Redirect to={"/contacts"}/>
 		);
 	}
 }

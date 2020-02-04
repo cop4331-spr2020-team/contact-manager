@@ -7,7 +7,6 @@ export default class LoginPage extends Component {
     render () {
         return (
             <div className="wrapper">
-                <Navbar className="justify-content-left"/>
                 <div className="form-wrapper">
                     <h1 className="head" id="title">
                     <span className="font-weight-bold">Login!</span>

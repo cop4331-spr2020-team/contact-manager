@@ -169,25 +169,61 @@ getContactsByUsername = async (req, res) => {
 			return res.status(400).json({ error: "UserNotFound"})
 		}
 		
-		Contact.find({ name: regex, _id: { $in: user.contacts } }, (err, contacts) => {
-			if (err) {
-				return res.status(400).json({
-					success: false,
-					error: err
-				})
+		var query = {
+			name: regex,
+			_id: { 
+				$in: user.contacts 
 			}
-	
-			if (!contacts) {
+		}
+
+		console.log(`LIMIT=${req.query.limit}; OFFSET=${req.query.offset}`)
+		
+		const limit = req.query.limit || 10;
+
+		var options = {
+			offset: req.query.offset || 0,
+			limit: limit
+		}
+
+		Contact.paginate(query, options).then(contacts_docs => {
+			if (!contacts_docs) {
 				return res.status(404).json({
 					success: false,
 					error: 'No contact found.'
 				})
 			}
-	
+
+			console.log(req.query.offset)
+			const contacts = contacts_docs.docs
+
+			const contacts_sorted = contacts.sort((a, b) => {
+				var nameA = a.name.toUpperCase();
+				var nameB = b.name.toUpperCase();
+				if (nameA < nameB) {
+					return -1;
+				}
+				if (nameA > nameB) {
+					return 1;
+				}
+
+				return 0;
+			})
+
 			return res.status(200).json({
 				success: true,
-				data: contacts
+				hasMore: contacts_sorted.length < limit ? false : true,
+				data: contacts_sorted
 			})
+
+		})
+		.catch(error => {
+			console.log(error)
+			if (error) {
+				return res.status(400).json({
+					success: false,
+					error: error
+				})
+			}
 		})
 	}) 
 	.catch(err => {
