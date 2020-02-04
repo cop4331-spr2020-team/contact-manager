@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { Button, InputGroup, FormControl } from "react-bootstrap";
+import { Spinner, Button, InputGroup, FormControl } from "react-bootstrap";
 import InfiniteScroll from "react-infinite-scroll-component";
 //import ContactView from './ContactView'
 
 import axios from "axios";
 import './style.css'
 import './ContactView.css'
+import { Redirect } from 'react-router-dom';
 
 function updateId(id) {
 	this.setState({id: id, isEdit: false}, () => {
@@ -30,6 +31,12 @@ function sortedIndex(items, contact) {
 	}
 	
     return low;
+}
+
+function sleeper(ms) {
+  return function(x) {
+    return new Promise(resolve => setTimeout(() => resolve(x), ms));
+  };
 }
 
 function add(items, contact, index) {
@@ -66,13 +73,15 @@ export default class ContactsView extends Component {
 	 super(props);
 	 
      this.state = {
-         items: [],
+      items: [],
 			hasMore: true,
 			doNewSearch: true,
 			offset: 0,
 			name: '',
 			searchName: '',
-			selectedId: null,
+      selectedId: null,
+      isAuthenticated: false,
+      isLoading: true,
      };
 
      // bind function in constructor instead of render (https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/jsx-no-bind.md)
@@ -188,7 +197,55 @@ export default class ContactsView extends Component {
     makeNewContact();
   }
 
+  checkLoginStatus() {
+    axios.get('/api/auth/logged_in', { withCredentials: true })
+    .then(response => {
+			if (response.data.logged_in && this.state.isAuthenticated === false) {
+        console.log('done')
+				this.setState({
+					isAuthenticated: true,
+					isLoading: false,
+					user: response.data.user,
+					name: response.data.name
+				});
+			} else if (!response.data.logged_in && this.state.isAuthenticated === true) {
+				this.setState({
+					isAuthenticated: false,
+					isLoading: false,					
+					user: {}
+				})
+			}
+		}).catch(error => {
+			this.setState({
+				isAuthenticated: false,
+				isLoading: false,
+			})
+			console.log('login error.')
+		})
+	}
+
+	componentDidMount() {
+		this.checkLoginStatus();
+	}
+
   render() {
+
+    const { isAuthenticated, isLoading } = this.state;
+
+    if (isLoading) {
+      return (
+        <div style={{height:"90vh", display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center",  width:"100wh"}}>
+          <Spinner animation="border" variant="light" style={{height:"300px", width:"300px"}}/>
+        </div>
+      )
+    }
+
+    if (!isAuthenticated) {
+      return (
+        <Redirect to ='/' />
+      )
+    }
+
     return (
       <div className="whole" style={{ backgroundColor: "#f8f9fa"}}>
         <div className="leftHalf" style={{ paddingTop: "2%", height: "100%", overflowY: "scroll", background: "#f8f9fa"}}>
