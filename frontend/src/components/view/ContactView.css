@@ -1,11 +1,11 @@
 .contact-icon {
-    height: 200px;
-    width: 200px;
+    height: 50px;
+    width: 50px;
 }
 
 .contact-icon2 {
-    height: 400px;
-    width: 400px;
+    height: 100px;
+    width: 100px;
 }
 
 .image-section {
@@ -33,6 +33,8 @@
 
 .contact-container {
     background-color: #E8E9EB;
+    width: 80wh;
+    height: 40vh;
 }
 
 .contact-list {
@@ -54,3 +56,25 @@
 .form-control {
     margin-bottom: 5px;
 }
+
+.whole {
+    background-color: black;
+    justify-content: center;
+    text-align: center;
+    width: 80%;
+    height: 85vh;
+    margin: 0 auto;
+    margin-top: 3vh;
+}
+
+.leftHalf{ width: 30%; float: left}
+.rightHalf{ width: 70%; float: left }
+
+@media (max-width: 320px){
+    .leftHalf{ width: 100%; color: red; }
+.rightHalf{ width: 100%; color: blue; }
+}
+
+.butt {
+    cursor:pointer;
+ }

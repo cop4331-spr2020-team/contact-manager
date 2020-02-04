@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Navbar, Card } from "react-bootstrap";
-import { Form, FormGroup, Row, Col, Label, Input, FormFeedback } from 'reactstrap';
+import { Button, InputGroup, FormControl } from "react-bootstrap";
 import InfiniteScroll from "react-infinite-scroll-component";
 //import ContactView from './ContactView'
 
@@ -11,6 +10,12 @@ import './ContactView.css'
 function updateId(id) {
 	this.setState({id: id, isEdit: false}, () => {
 		this.grabUserData()
+	})
+}
+
+function makeNewContact() {
+	this.setState({id: null, isEdit: true}, () => {
+		this.resetForms()
 	})
 }
 
@@ -38,8 +43,21 @@ function Title(props) {
 	if (isNew) {
 		return <h1>New Contact</h1>
 	} else {
-		return <h1>Edit Contact</h1>
+		return <h1></h1>
 	}
+}
+
+function SubmitButton(props) {
+  const isNew = props.id === null;
+  if (isNew) {
+    return <div onClick={props.onChange} className="col">
+      <Button className="col-6 btn btn-primary">Create</Button>
+    </div>
+  }
+
+  return <div onClick={props.onChange} className="col">
+      <Button className="col-6 btn btn-primary">Done</Button>
+    </div>
 }
 
 export default class ContactsView extends Component {
@@ -127,7 +145,7 @@ export default class ContactsView extends Component {
 		const nitems = this.state.items.map(tcontact => {
 			console.log(contact)
 			if (tcontact._id === contact._id) {
-				return contact;
+				return contact;	
 			}
 
 			return tcontact;
@@ -170,7 +188,11 @@ export default class ContactsView extends Component {
 
 	handleCardSelect (id) {
 		updateId(id);
-	}
+  }
+  
+  handleMakeNewContact() {
+    makeNewContact();
+  }
 
   render() {
 
@@ -180,57 +202,68 @@ export default class ContactsView extends Component {
 	}
 
     return (
-		<div className="row" style={{ marginLeft: "0px", marginRight: "0px"}}>
-			<div className="col-4 list-section">
-					<h1>Contacts</h1>
-					<FormGroup>
-						<Input
-						className="input"
-						type="text"
-						placeholder="Search Contact"
-						value={this.state.searchName}
-						onChange={this.handleSearchChange}
-						/>
-					</FormGroup>
-				<div id="scrollableDiv" className="contact-list smooth-scroll" style={{ height: "80vh", overflow: "auto"}}>
+      <div className="whole" style={{ backgroundColor: "#f8f9fa"}}>
+        <div className="leftHalf" style={{ paddingTop: "2%", height: "100%", overflowY: "scroll", background: "#f8f9fa"}}>
+          <div className="container-fluid">
+            <InputGroup className="mb-3">
+              <FormControl
+                className="form-control"
+                type="texts"
+                placeholder="Search Contact"
+                value={this.state.searchName}
+                onChange={this.handleSearchChange}
+              />
+              <InputGroup.Append>
+                    <Button onClick={this.handleMakeNewContact} className="butt" variant="outline-primary" size="sm">+</Button>
+              </InputGroup.Append>
+            </InputGroup>
+            <hr/>
 
-					<InfiniteScroll
-						dataLength={this.state.items.length}
-						next={this.grabContacts}
-						hasMore={this.state.hasMore}
-						scrollableTarget="scrollableDiv"
-						endMessage={
-							<p style={{ textAlign: "center" }}>
-							<b>End of Contacts</b>
-							</p>
-						}
-						>
+            <div id="scrollableDiv" className="smooth-scroll" style={{ height: "100%", backgroundColor: "#f8f9fa"}}>
+              <InfiniteScroll
+                dataLength={this.state.items.length}
+                next={this.grabContacts}
+                hasMore={this.state.hasMore}
+                scrollableTarget="scrollableDiv"
+                >
 
-						{this.state.items.map(item =>
-							<div 
-								key={item._id} 
-								className="contact-card card flex-row flex-wrap flex-shrink-3"
-								onClick={this.handleCardSelect.bind(this, item._id)}
-							
-							>
-								<div className="">
-								<img className="card-image contact-icon rounded-circle" src="/default.png" />
-								</div>
-								<div className="card-block px-2">
-									<h4 className="card-title card-text">{item.name}</h4>
-									<p className="card-text">{item.cell_phone_number}</p>
-									<p className="card-text">{item.company}</p>
-								</div>
-							</div>
-						)}
+                {this.state.items.map(item =>
+                  <div 
+                    style={{backgroundColor: "transparent"}}
+                    key={item._id} 
+                    className="contact-card container"
+                    onClick={this.handleCardSelect.bind(this, item._id)}
+                  
+                  >
+                    <div class="card" style={{background: "transparent"}}>
+                      <div class="row no-gutters">
+                        <div class="col-2" style={{background: "gray"}}>
+                          <img className="card-image contact-icon rounded-circle" src="/default.png" />
+                        </div>
+                        <div class="col-8">
+                          <div class="flex-row text-left">
+                            <div class="col">
+                              <b className="card-text">{item.name + " " + item.last}</b>
+                            </div>
+                            <div class="col">
+                              <label size="sm" className="card-text text-muted">{item.company}</label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <hr/>
+                  </div>
+                )}
 
-					</InfiniteScroll>
-				</div>
-			</div>
-			<div className="col-8">
-				<ContactView addContact={this.addContact} editContact={this.editContact} deleteContact={this.deleteContact} updateId={this.updateId}/>
-			</div>
-		</div>
+              </InfiniteScroll>
+            </div>
+          </div>
+        </div>
+        <div className="rightHalf" style={{ paddingTop: "2%",}}>
+          <ContactView makeNewContact={this.makeNewContact} addContact={this.addContact} editContact={this.editContact} deleteContact={this.deleteContact} updateId={this.updateId}/>
+        </div>
+      </div>
     );
 	}
 }
@@ -241,7 +274,8 @@ export class ContactView extends Component {
 		 super(props);
 
 		 this.state = {
-			name: '',
+      name: '',
+      last: '',
 			cell_phone_number: '',
 			home_address: '',
 			birthday: '',
@@ -253,7 +287,8 @@ export class ContactView extends Component {
 			id: null,
 		 };
 
-		 updateId = updateId.bind(this);
+     updateId = updateId.bind(this);
+     makeNewContact = makeNewContact.bind(this);
 	}
 
 	grabUserData() {
@@ -261,7 +296,8 @@ export class ContactView extends Component {
 		 .then(response => {
 			  const data = response.data.data;
 			  this.setState({
-					name: data.name,
+          name: data.name,
+          last: data.last,
 					cell_phone_number: data.cell_phone_number,
 					home_address: data.home_address,
 					birthday: data.birthday,
@@ -277,6 +313,8 @@ export class ContactView extends Component {
 
 	editUserData = event => {
 
+    console.log('here')
+
 		const data = {
 			name: this.state.name,
 				cell_phone_number: this.state.cell_phone_number,
@@ -284,7 +322,8 @@ export class ContactView extends Component {
 				birthday: this.state.birthday,
 				note: this.state.note,
 				email: this.state.email,
-				company: this.state.company,
+        company: this.state.company,
+        last: this.state.last,
 		}
 
 		// Creating new contact
@@ -367,6 +406,12 @@ export class ContactView extends Component {
 		this.setState({
 			home_address: event.target.value
 		})
+  }
+  
+  handlelastChange = event => {
+		this.setState({
+			last: event.target.value
+		})
 	}
 
 	onEditClick = event => {
@@ -375,17 +420,14 @@ export class ContactView extends Component {
 		})
 	}
 
-	componentDidMount() {
-		 this.grabUserData()
-	}
-
 	deleteContact(id) {
 	  axios.delete(`/api/contact/${id}`)
 	  .then(response => {
 		  if (response.data.success) {
 			  const id = this.state.id;
 			  this.setState({
-				name: '',
+        name: '',
+        last: '',
 				cell_phone_number: '',
 				home_address: '',
 				birthday: '',
@@ -394,7 +436,7 @@ export class ContactView extends Component {
 				company: '',
 				isEdit: true,
 				id: null,
-				
+
 			  }, () => {
 				  this.props.deleteContact(id)
 			  });
@@ -403,17 +445,18 @@ export class ContactView extends Component {
 	  .catch(error => {
 		  console.log(error.response)
 	  })
-	}
+  }
 
 	resetForms = event => {
 		this.setState({
-			name: '',
-			cell_phone_number: '',
-			home_address: '',
-			birthday: '',
-			note: '',
-			email: '',
-			company: '',
+      name: '',
+      last: '',
+      cell_phone_number: '',
+      home_address: '',
+      birthday: '',
+      note: '',
+      email: '',
+      company: '',
 		})
 	}
 
@@ -424,128 +467,254 @@ export class ContactView extends Component {
 		if (isEdit || isDeleted) {
 
 			return (
-				<div className="row contact-container fullscreen">
-					<div className="col text-center">
-						<Title id={this.state.id}/>
-
-
-						<div className="row">
-							<div className="col text-center image-section">
-								<img className="card-image contact-icon2, rounded-circle" src="/default.png" />
-							</div>
-						</div>
-
-						<div className="container-fluid h-10 bg-light text-dark">
-						<div className="row justify-content-center align-items-center">
-							<div>&nbsp;</div>  
-						</div>
-						<hr/>
-						<div className="row justify-content-center align-items-center h-10">
-							<div className="col col-sm-6 col-md-6 col-lg-4 col-xl-3">
-								<form action="">
-									<div className="form-group">
-										<Input
-											type="text"
-											className="form-control"
-											placeholder="Full Name"
-											onChange={this.handleNameChange}
-											value={this.state.name}
-										/>
-
-										<Input
-											type="text"
-											className="form-control"
-											placeholder="Phone Number"
-											onChange={this.handleNumberChange}
-											value={this.state.cell_phone_number}
-										/>
-
-										<Input
-											type="text"
-											className="form-control"
-											placeholder="Email Address"
-											onChange={this.handleEmailChange}
-											value={this.state.email}
-										/>
-
-										<Input
-											type="text"
-											className="form-control"
-											placeholder="Company"
-											onChange={this.handleCompanyChange}
-											value={this.state.company}
-										/>
-
-										<Input
-											type="text"
-											className="form-control"
-											placeholder="Home Address"
-											onChange={this.handleAddressChange}
-											value={this.state.home_address}
-										/>
-
-										<Input
-											type="text"
-											className="form-control"
-											placeholder="Birthday"
-											onChange={this.handleBirthdayChange}
-											value={this.state.birthday}
-										/>
-								
-										<textarea
-											type="text"
-											className="form-control"
-											placeholder="Note"
-											onChange={this.handleNoteChange}
-											value={this.state.note}
-										/>
-
-
-										
-									</div>
-									<div className="form-group">
-										<div className="container">
-											<div className="row">
-											<div onClick={this.resetForms} className="col"><Button variant="danger" className="">Reset</Button></div>
-											<div onClick={this.editUserData} className="col"><Button className="">Submit</Button></div>
-											</div>
-										</div>
-									</div>
-								</form>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+        <div className="container bg-light text-dark">
+          <div className="row justify-content-center align-items-center">
+            <div className="col text-center image-section">
+              <img className="card-image contact-icon2 rounded-circle" src="/default.png" />
+            </div>
+          </div>
+          <hr/>
+          <div className="row justify-content-center align-items-center">
+            <div className="col col-sm-6 col-md-6 col-lg-4 col-xl-7">
+              <form action="">
+                <hr/>
+                <div className="form-row" style={{display: "flex", alignItems: "center" }}>
+                  <div className="col-2">
+                    <label>First Name:</label>
+                  </div>
+                  <div className="col-3">
+                    <input 
+                      type="texts" 
+                      className="form-control" 
+                      placeholder="John"
+                      value={this.state.name}
+                      onChange={this.handleNameChange}
+                    />
+                  </div>
+                  <div className="col-3">
+                    <label>Last Name:</label>
+                  </div>
+                  <div className="col-4">
+                    <input 
+                      type="texts" 
+                      className="form-control" 
+                      placeholder="Doe"
+                      value={this.state.last}
+                      onChange={this.handlelastChange}
+                    />
+                  </div>
+                </div>
+                <hr/>
+                <div className="form-row" style={{display: "flex", alignItems: "center" }}>
+                  <div className="col-4">
+                    <label>Company:</label>
+                  </div>
+                  <div className="col">
+                    <input 
+                      type="texts" 
+                      className="form-control" 
+                      placeholder="UCF CS College"
+                      value={this.state.company}
+                      onChange={this.handleCompanyChange}
+                    />
+                  </div>
+                </div>
+                <hr/>
+                <div className="form-row" style={{display: "flex", alignItems: "center" }}>
+                  <div className="col-4">
+                    <label>Mobile:</label>
+                  </div>
+                  <div className="col">
+                    <input 
+                      type="tel" 
+                      className="form-control" 
+                      placeholder="+1-(123)-456-7890"
+                      value={this.state.cell_phone_number}
+                      onChange={this.handleNumberChange}
+                    />
+                  </div>
+                </div>
+                {/*
+                <div className="form-row">
+                  <div className="col-4">
+                    <label>Phone:</label>
+                  </div>
+                  <div className="col">
+                    <input type="tel" className="form-control" placeholder="+1-(123)-456-7890" />
+                  </div>
+                </div>
+                */}
+                <hr/>
+                <div className="form-row" style={{display: "flex", alignItems: "center" }}>
+                  <div className="col-4">
+                    <label>Email:</label>
+                  </div>
+                  <div className="col">
+                    <input 
+                      type="email" 
+                      className="form-control" 
+                      placeholder="example@email.com"
+                      value={this.state.email}
+                      onChange={this.handleEmailChange}
+                    />
+                  </div>
+                </div>
+                <hr/>
+                <div className="form-row" style={{display: "flex", alignItems: "center" }}>
+                  <div className="col-4">
+                    <label>Home Address:</label>
+                  </div>
+                  <div className="col">
+                    <input 
+                      type="texts" 
+                      className="form-control" 
+                      placeholder="4000 Central Florida Blvd, Orlando, FL 32816"
+                      value={this.state.home_address}
+                      onChange={this.handleAddressChange}
+                    />
+                  </div>
+                </div>
+                <hr/>
+                <div className="form-row" style={{display: "flex", alignItems: "center" }}>
+                  <div className="col-4">
+                    <label>Birthday:</label>
+                  </div>
+                  <div className="col">
+                    <input 
+                      type="date" 
+                      className="form-control" 
+                      placeholder="February 4, 2020" 
+                      value={this.state.birthday}
+                      onChange={this.handleBirthdayChange}
+                    />
+                  </div>
+                </div>
+                <hr/>
+                <div className="form-row" style={{display: "flex", alignItems: "center" }}>
+                  <div className="col-4">
+                    <label>Note:</label>
+                  </div>
+                  <div className="col">
+                    <textarea 
+                      type="text" 
+                      className="form-control" 
+                      placeholder="This is a cool guy." 
+                      value={this.state.note}
+                      onChange={this.handleNoteChange}
+                    />
+                  </div>
+                </div>
+                <hr/>
+                <div className="form-group">
+                  <div className="container">
+                    <div className="row">
+                      <div className="col"><Button variant="danger" onClick={this.resetForms} className="col-6 btn btn-secondary">Reset</Button></div>
+                      <SubmitButton onChange={this.editUserData} id={this.state.id} />
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
 			)
-
 		}
 
 		 return (
-			<div className="row" style={{ background: "gray"}}>
-
-				<div className="col text-center">
-				<h1>View Contact</h1>
-
-				<div className="row">
-					<div className="col text-center image-section">
-						<img className="card-image contact-icon2 rounded-circle" src="/default.png" />
-					</div>
-				</div>
-
-				<Card.Body className="text-center">
-					<Card.Title>{this.state.name}</Card.Title>
-					<Card.Text>{this.state.cell_phone_number}</Card.Text>
-					<Card.Text>{this.state.home_address}</Card.Text>
-					<Card.Text>{this.state.birthday}</Card.Text>
-					<Card.Text>{this.state.company}</Card.Text>
-					<Card.Text>{this.state.email}</Card.Text>
-				</Card.Body>
-
-				<Button onClick={this.onEditClick}>Edit Contact</Button>
-				<Button onClick={this.deleteContact.bind(this, this.state.id)}>Delete Contact</Button>
-				</div>
-			</div>
-		 )
+      <div className="container-fluid h-100 bg-light text-dark">
+      <Title id={this.state.id}/>
+      <div className="row justify-content-center align-items-center">
+        <div className="col text-center image-section">
+          <img className="card-image contact-icon2 rounded-circle" src="/default.png" />
+          <h1>{this.state.name + ' ' + this.state.last || ''}</h1>
+        </div>
+      </div>
+      <hr/>
+      <div className="row justify-content-center align-items-center h-100">
+        <div className="col col-sm-6 col-md-6 col-lg-4 col-xl-7">
+          <form action="">
+            <hr/>
+            <div className="form-row">
+              <div className="col-4">
+                <label>Company:</label>
+              </div>
+              <div className="col">
+                <b>{this.state.company}</b>
+              </div>
+            </div>
+            <hr/>
+            <div className="form-row">
+              <div className="col-4">
+                <label>Mobile:</label>
+              </div>
+              <div className="col">
+                <b>{this.state.cell_phone_number}</b>
+              </div>
+            </div>
+            {/*
+            <div className="form-row">
+              <div className="col-4">
+                <label>Phone:</label>
+              </div>
+              <div className="col">
+                <input type="tel" className="form-control" placeholder="+1-(123)-456-7890" />
+              </div>
+            </div>
+            */}
+            <hr/>
+            <div className="form-row">
+              <div className="col-4">
+                <label>Email:</label>
+              </div>
+              <div className="col">
+                <b>{this.state.email}</b>
+              </div>
+            </div>
+            <hr/>
+            <div className="form-row">
+              <div className="col-4">
+                <label>Home Address:</label>
+              </div>
+              <div className="col">
+                <b>{this.state.home_address}</b>
+              </div>
+            </div>
+            <hr/>
+            <div className="form-row">
+              <div className="col-4">
+                <label>Birthday:</label>
+              </div>
+              <div className="col">
+                <b>{this.state.birthday}</b>
+              </div>
+            </div>
+            <hr/>
+            <div className="form-row">
+              <div className="col-4">
+                <label>Note:</label>
+              </div>
+              <div className="col">
+                <textarea
+                  readonly
+                  type="text" 
+                  className="form-control" 
+                  value={this.state.note}
+                />
+              </div>
+            </div>
+            <hr/>
+            <div className="form-group">
+              <div className="container">
+                <div className="row">
+                  <div className="col"><Button variant="danger" onClick={this.deleteContact.bind(this, this.state.id)} className="col-6 btn btn-secondary">Delete</Button></div>
+                  <div onClick={this.onEditClick} className="col"><Button className="col-6 btn btn-primary">Edit</Button></div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+			)
 	}
 }
