@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Navbar, Button } from 'react-bootstrap';
 import axios from 'axios'
-import { useCookies } from 'react-cookie'
 import './Navbar.css';
 
 export default class MainNavbar extends Component {
