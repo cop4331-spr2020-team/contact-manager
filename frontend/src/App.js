@@ -1,11 +1,11 @@
 import React from 'react';
-
+import { Navbar } from 'react-bootstrap'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import Navbar from './components/layout/MainNavbar'
+import MainNavbar from './components/layout/MainNavbar'
 import Landing from './components/view/Landing';
 import LoginPage from './components/auth/LoginPage'
 import RegisterPage from './components/auth/RegisterPage'
@@ -16,8 +16,12 @@ import ContactsView from './components/view/ContactsView'
 const NavRoute = ({exact, path, component: Component}) => (
 	<Route exact={exact} path={path} render={(props) => (
 		 <div className="fullscreen">
-			  <Navbar/>
+			  <MainNavbar/>
 				<Component {...props}/>
+        <Navbar fixed="bottom" variant="light" style={{ maxHeight: "35px",backgroundColor: "#ededed"}}>
+							<Navbar.Text>© Team 6, Spring 2020.
+							</Navbar.Text>
+					</Navbar>
 		 </div>
 	)}/>
 )

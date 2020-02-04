@@ -12,8 +12,6 @@ export default class MainNavbar extends Component {
             if (response.data.success) {
                 console.log(response.data)
             }
-
-            window.location.reload(false);
         })
         .catch(error => {
             console.log(error.response)

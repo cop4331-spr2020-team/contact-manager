@@ -77,7 +77,7 @@ export default class Login extends Component {
 				<FormGroup>		
 					<Label>Username</Label>
 					<Input
-						className="input"
+						className="text"
 						type="text"
 						value={this.state.userName}
 						onChange={this.handleUsernameChange}
@@ -87,7 +87,7 @@ export default class Login extends Component {
 				<FormGroup>
 					<Label>Password</Label>
 					<Input
-						className="input"
+						className="text"
 						type="password"
 						value={this.state.password}
 						onChange={this.handlePasswordChange}

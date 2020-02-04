@@ -164,7 +164,7 @@ class Landing extends Component {
 						</div>
 					</div>
 
-					<Navbar fixed="bottom">
+					<Navbar fixed="bottom" variant="light" style={{ maxHeight: "35px",backgroundColor: "#ededed"}}>
 							<Navbar.Text>© Team 6, Spring 2020.
 							</Navbar.Text>
 					</Navbar>
