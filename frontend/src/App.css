@@ -230,3 +230,5 @@ input[type=password] {
     border-radius: 20px;
 }
 
+.flex {display: flex;}
+.form-control { min-width: 0;}

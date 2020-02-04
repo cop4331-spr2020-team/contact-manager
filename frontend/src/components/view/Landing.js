@@ -97,7 +97,7 @@ class Landing extends Component {
 
 		if (!this.state.isAuthenticated) {
 			return (
-				<div className="root">
+				<div className="root fullscreen" style={{backgroundColor: "white"}}>
 					<div className="container-fluid background">
 						<Navbar className="dark-navbar justify-content-left">
 							<Navbar.Brand
