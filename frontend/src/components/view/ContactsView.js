@@ -82,8 +82,6 @@ export default class ContactsView extends Component {
   }
 
   deleteContact = (id) => {
-	  console.log('i was called')
-	  console.log(id)
 	  this.setState({
 		  items: this.state.items.filter(contact => contact._id !== id)
 	  })
@@ -112,8 +110,6 @@ export default class ContactsView extends Component {
 		})
 		.then(response => {
 			const data = response.data.data;
-			console.log(response.data)
-
 			const { doNewSearch } = this.state;
 
 			if (doNewSearch) {
@@ -132,7 +128,6 @@ export default class ContactsView extends Component {
 			}
 		})
 		.catch(error => {
-			console.log(error.response)
 		})
 	}
 
@@ -143,7 +138,6 @@ export default class ContactsView extends Component {
 
 	editContact = (contact) => {
 		const nitems = this.state.items.map(tcontact => {
-			console.log(contact)
 			if (tcontact._id === contact._id) {
 				return contact;	
 			}
@@ -195,12 +189,6 @@ export default class ContactsView extends Component {
   }
 
   render() {
-
-	const style = {
-		margin: 6,
-		padding: 8,
-	}
-
     return (
       <div className="whole" style={{ backgroundColor: "#f8f9fa"}}>
         <div className="leftHalf" style={{ paddingTop: "2%", height: "100%", overflowY: "scroll", background: "#f8f9fa"}}>
@@ -307,13 +295,11 @@ export class ContactView extends Component {
 			  })
 		 })
 		 .catch(error => {
-			  console.log(error.response)
 		 })
 	}
 
 	editUserData = event => {
 
-    console.log('here')
 
 		const data = {
 			name: this.state.name,
@@ -331,9 +317,7 @@ export class ContactView extends Component {
 			axios.post('/api/contact', data)
 			.then(response => {
 
-				console.log('test')
 				const data = response.data.data
-				console.log(data)
 
 				this.setState({
 					id: data._id,
@@ -344,7 +328,6 @@ export class ContactView extends Component {
 
 			})
 			.catch(error => {
-				console.log(error)
 			})
 
 		// Editing contact
@@ -361,7 +344,6 @@ export class ContactView extends Component {
 
 			})
 			.catch(error => {
-				console.log(error)
 			})
 		}
 	}
@@ -443,7 +425,6 @@ export class ContactView extends Component {
 		  }
 	  })
 	  .catch(error => {
-		  console.log(error.response)
 	  })
   }
 

@@ -151,7 +151,7 @@ export default class Register extends Component {
 						<FormGroup>
 							<Input
 								name="firstName"
-								className="input"
+								className="text"
 								type="text"
 								placeholder="First Name"
 								value={this.state.name}
@@ -164,7 +164,7 @@ export default class Register extends Component {
 						<FormGroup>
 							<Input
 								name="lastName"
-								className="input"
+								className="text"
 								type="text"
 								placeholder="Last Name"
 								value={this.state.name}
@@ -180,7 +180,7 @@ export default class Register extends Component {
 						<FormGroup>
 							<Input
 								name="userName"
-								className="input"
+								className="text"
 								type="text"
 								placeholder="Username"
 								value={this.state.username}
@@ -198,7 +198,7 @@ export default class Register extends Component {
 					<FormGroup>
 						<Input
 							name="email"
-							className="input"
+							className="text"
 							type="text"
 							placeholder="Email"
 							value={this.state.email}
@@ -215,7 +215,7 @@ export default class Register extends Component {
 						<FormGroup>
 							<Input
 								name="password"
-								className="input"
+								className="text"
 								type="password"
 								placeholder="Password"
 								value={this.state.password}
@@ -232,7 +232,7 @@ export default class Register extends Component {
 						<FormGroup>
 							<Input
 								name="confirmationPassword"
-								className="input"
+								className="text"
 								type="password"
 								placeholder="Confirm Password"
 								value={this.state.confirmationPassword}

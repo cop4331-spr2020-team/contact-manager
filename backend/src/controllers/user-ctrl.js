@@ -13,6 +13,8 @@ const User   = require('../models/user-model')
 // Validation for data.
 const { body, validationResult } = require('express-validator')
 
+const invalidated = new Array();
+
 authenticate = async (req, res, next) => {
 
 	if (!req.cookies.jwt) {
@@ -95,7 +97,7 @@ login = async (req, res) => {
 }
 
 logout = async (req, res) => {
-	return res.clearCookie('jwt').json({ success: true }).status(200)
+	return res.clearCookie('jwt', {httpOnly: true}).json({ success: true }).status(200)
 }
 
 register = async (req, res) => {
