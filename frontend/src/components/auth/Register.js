@@ -90,7 +90,7 @@ export default class Register extends Component {
 			}
 		}
 
-		axios.put('http://localhost:8080/api/auth/register', {
+		axios.put('/api/auth/register', {
 			name: firstName + ' ' + lastName,
 			email: email,
 			username: userName,
