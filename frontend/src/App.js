@@ -18,10 +18,6 @@ const NavRoute = ({exact, path, component: Component}) => (
 		 <div className="fullscreen">
 			  <MainNavbar/>
 				<Component {...props}/>
-        <Navbar fixed="bottom" variant="light" style={{ maxHeight: "35px",backgroundColor: "#ededed"}}>
-							<Navbar.Text>© Team 6, Spring 2020.
-							</Navbar.Text>
-					</Navbar>
 		 </div>
 	)}/>
 )

@@ -248,7 +248,7 @@ export default class ContactsView extends Component {
 
     return (
       <div className="whole" style={{ backgroundColor: "#f8f9fa"}}>
-        <div className="leftHalf" style={{ paddingTop: "2%", height: "100%", overflowY: "scroll", background: "#f8f9fa"}}>
+        <div className="leftHalf" style={{ paddingTop: "2%", paddingBottom: "2%", height: "100%", overflowY: "scroll", background: "#f8f9fa"}}>
           <div className="container-fluid">
             <InputGroup className="mb-3">
               <FormControl
