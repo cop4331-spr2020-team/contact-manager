@@ -94,19 +94,14 @@ export default class Register extends Component {
 			})
 			}
 		}
-		else {
-			this.setState({
-				password: hash(password, { algorithm: 'md5', encoding: 'base64' }),
-				confirmationPassword: hash(confirmationPassword, { algorithm: 'md5', encoding: 'base64' })
-			})
-		}
 		
-		axios.put('/api/auth/register', {
+		
+		axios.put('http://localhost:8080/api/auth/register', {
 			name: firstName + ' ' + lastName,
 			email: email,
 			username: userName,
-			password: password,
-			passwordConfirmation: confirmationPassword
+			password: hash(password, { algorithm: 'md5', encoding: 'base64' }),
+			passwordConfirmation: hash(confirmationPassword, { algorithm: 'md5', encoding: 'base64' })
 		})
 		.then((response) => {
 			console.log('Hooray!')
